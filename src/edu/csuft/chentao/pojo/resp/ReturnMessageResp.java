@@ -3,13 +3,16 @@
  */
 package edu.csuft.chentao.pojo.resp;
 
+import java.io.Serializable;
+
 /**
  * @author csuft.chentao
  *
  *         2016年12月11日 下午8:52:29
  */
-public class ReturnMessageResp {
+public class ReturnMessageResp implements Serializable{
 
+	private static final long serialVersionUID = 1L;
 	/** 类型，成功or失败 */
 	private int type;
 	/** 对类型的描述 */
@@ -39,6 +42,12 @@ public class ReturnMessageResp {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@Override
+	public String toString() {
+		return "ReturnMessageResp [type=" + type + ", description="
+				+ description + "]";
 	}
 
 }

@@ -12,14 +12,13 @@ public class GroupTable {
 
 	/** group表名 */
 	public static final String GROUPTABLE = "chatgroup";
-	public static final String GROUPTABLE_ALL_FIELD = "chatgroup(groupid,groupname,tag,number,groupimage)";
+	public static final String GROUPTABLE_ALL_FIELD = "chatgroup(groupid,groupname,tag,number)";
 	public static final String ID = "id";
 	public static final String GROUPID = "groupid";
 	public static final String GROUPNAME = "groupname";
 	public static final String TAG = "tag";
 	/** 人数 */
 	public static final String NUMBER = "number";
-	public static final String GROUPIMAGE = "groupimage";
 
 	/** id */
 	private int id;
@@ -31,18 +30,15 @@ public class GroupTable {
 	private String tag;
 	/** 人数 */
 	private int number;
-	/** 群头像 */
-	private String groupimage;
 
 	public GroupTable(int id, int groupid, String groupname, String tag,
-			int number, String groupimage) {
+			int number) {
 		super();
 		this.id = id;
 		this.groupid = groupid;
 		this.groupname = groupname;
 		this.tag = tag;
 		this.number = number;
-		this.groupimage = groupimage;
 	}
 
 	public GroupTable() {
@@ -86,14 +82,6 @@ public class GroupTable {
 
 	public void setNumber(int number) {
 		this.number = number;
-	}
-
-	public String getGroupimage() {
-		return groupimage;
-	}
-
-	public void setGroupimage(String groupimage) {
-		this.groupimage = groupimage;
 	}
 
 }

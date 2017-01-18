@@ -8,7 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import edu.csuft.chentao.pojo.req.HeadImage;
 import edu.csuft.chentao.pojo.req.RegisterReq;
 import edu.csuft.chentao.pojo.resp.RegisterResp;
 import edu.csuft.chentao.pojo.resp.ReturnMessageResp;
@@ -32,7 +31,7 @@ public class UserTableOperate {
 	 * @return 是否注册成功
 	 */
 	@SuppressWarnings("resource")
-	public static synchronized RegisterResp insert(RegisterReq registerReq) {
+	public static synchronized RegisterResp insert(RegisterReq req) {
 		RegisterResp resp = new RegisterResp();
 
 		Connection connection = DaoConnection.getConnection();
@@ -46,14 +45,16 @@ public class UserTableOperate {
 			 */
 			ps = connection.prepareStatement("select " + UserTable.USERNAME
 					+ " from " + UserTable.USERTABLE + " where username = ?");
-			ps.setString(1, registerReq.getUsername());
+			ps.setString(1, req.getUsername());
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				Logger.log("用户名已经存在");
-				resp.setType(Constant.REGISTER_TYPE_REPEAT_USERNAME);
-				resp.setDescription(registerReq.getUsername() + "注册失败");
+				resp.setType(Constant.TYPE_REGISTER_REPEAT_USERNAME);
+				resp.setDescription(req.getUsername() + "注册失败");
 				return resp;
 			}
+
+			Logger.log("用户名不存在，可以注册");
 
 			// 用户的id值，从数据库中取出最大值，然后+1
 			int userid = Constant.DEFAULT_USERID;
@@ -65,31 +66,28 @@ public class UserTableOperate {
 				userid = id == 0 ? userid : id + 1;
 			}
 
-			String filename = registerReq.getHeadImage().getFilename();
-			// 重新拼凑名字，用用户的id值作为用户头像图片名称
-			filename = userid + filename.substring(filename.lastIndexOf("."));
-			registerReq.getHeadImage().setFilename(filename);
-
-			// 在修改完图片名称后，保存文件
-			OperationUtil.saveHeadImage(registerReq.getHeadImage());
+			// 保存头像
+			OperationUtil.saveHeadImage(req.getHeadImage(),
+					userid);
 
 			ps = connection.prepareStatement("insert into "
-					+ UserTable.USERTABLE_ALL_FIELD + " values(?,?,?,?,?,?)");
+					+ UserTable.USERTABLE_ALL_FIELD + " values(?,?,?,?,?)");
 			ps.setInt(1, userid);
-			ps.setString(2, registerReq.getUsername());
-			ps.setString(3, registerReq.getPassword());
-			ps.setString(4, registerReq.getNickname());
-			ps.setString(5, registerReq.getHeadImage().getFilename());
-			ps.setString(6, registerReq.getSignature());
+			ps.setString(2, req.getUsername());
+			ps.setString(3, req.getPassword());
+			ps.setString(4, req.getNickname());
+			ps.setString(5, req.getSignature());
 
 			// 注册成功
-			if (ps.execute()) {
-				resp.setType(Constant.REGISTER_TYPE_SUCCESS);
-				resp.setDescription(registerReq.getUsername() + "注册成功");
+			if (!ps.execute()) {
+				Logger.log("注册成功");
+				resp.setType(Constant.TYPE_REGISTER_SUCCESS);
+				resp.setDescription(req.getUsername() + "注册成功");
 				resp.setUserid(userid);
 			} else {
-				resp.setType(Constant.REGISTER_TYPE_REPEAT_USERNAME);
-				resp.setDescription(registerReq.getUsername() + "注册失败");
+				Logger.log("注册失败");
+				resp.setType(Constant.TYPE_REGISTER_REPEAT_USERNAME);
+				resp.setDescription(req.getUsername() + "注册失败");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -216,8 +214,11 @@ public class UserTableOperate {
 
 	/**
 	 * 获得用户的所有数据
-	 * @param username 用户名
-	 * @param password 用户密码
+	 * 
+	 * @param username
+	 *            用户名
+	 * @param password
+	 *            用户密码
 	 * @return 用户数据
 	 */
 	public static UserInfoResp selectUserInfo(String username, String password) {
@@ -226,33 +227,75 @@ public class UserTableOperate {
 		ResultSet rs = null;
 
 		UserInfoResp resp = new UserInfoResp();
-		
+
 		try {
-			ps = connection.prepareStatement("select userid,nickname,headimage,signature from "
-					+ UserTable.USERTABLE + " where " + UserTable.USERNAME
-					+ "=? and " + UserTable.PASSWORD + "=?");
+			ps = connection
+					.prepareStatement("select userid,nickname,signature from "
+							+ UserTable.USERTABLE + " where "
+							+ UserTable.USERNAME + "=? and "
+							+ UserTable.PASSWORD + "=?");
 			ps.setString(1, username);
 			ps.setString(2, password);
-			
+
 			rs = ps.executeQuery();
-			if(rs.next()){
+			if (rs.next()) {
 				int userid = rs.getInt(1);
 				String nickname = rs.getString(2);
-				HeadImage headImage = OperationUtil.getHeadImage(rs.getString(3));
-				String signature = rs.getString(4);
+				byte[] headImage = OperationUtil.getHeadImage(userid);
+				String signature = rs.getString(3);
 				resp.setNickname(nickname);
 				resp.setHeadImage(headImage);
 				resp.setSignature(signature);
 				resp.setUserid(userid);
-			}else{
+			} else {
 				resp.setUserid(-1);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}finally{
+		} finally {
 			OperationUtil.closeDataConnection(ps, rs);
 		}
-		
+
+		return resp;
+	}
+
+	/**
+	 * 根据用户id得到用户信息
+	 * 
+	 * @param userId
+	 *            用户id
+	 * @return 用户信息
+	 */
+	public static UserInfoResp selectUserInfoWithUserId(int userId) {
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		UserInfoResp resp = new UserInfoResp();
+		try {
+			String sql = "select userid,nickname,signature from "
+					+ UserTable.USERTABLE + " where " + UserTable.USERID
+					+ " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, userId);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				//用户id
+				resp.setUserid(rs.getInt(1));
+				//昵称
+				resp.setNickname(rs.getString(2));
+				//签名
+				resp.setSignature(rs.getString(3));
+				//头像
+				resp.setHeadImage(OperationUtil.getHeadImage(resp.getUserid()));
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
 		return resp;
 	}
 

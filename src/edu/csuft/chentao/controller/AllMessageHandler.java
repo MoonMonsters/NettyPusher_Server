@@ -15,12 +15,10 @@ public class AllMessageHandler {
 
 	public static void handleMessage(ChannelHandlerContext chc, Object object){
 		
-		Logger.log("AllMessageHandler-->handleMessage");
+		Logger.log("AllMessageHandler-->处理消息入口");
 		
 		//根据相应的object类型，得到对应的处理对象
 		Handler handler = MessageHandlerFactory.getHandlerInstance(object);
-		
-		Logger.log("Handler-->handler");
 		
 		//处理操作
 		handler.handle(chc, object);

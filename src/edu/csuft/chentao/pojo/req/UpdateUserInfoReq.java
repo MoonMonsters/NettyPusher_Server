@@ -23,10 +23,10 @@ public class UpdateUserInfoReq implements Serializable {
 	/** 更新的值，包括了昵称或者签名 */
 	String content;
 	/** 更新的头像 */
-	HeadImage headImage;
+	byte[] headImage;
 
 	public UpdateUserInfoReq(int userid, int type, String content,
-			HeadImage headImage) {
+			byte[] headImage) {
 		super();
 		this.userid = userid;
 		this.type = type;
@@ -61,11 +61,11 @@ public class UpdateUserInfoReq implements Serializable {
 		this.content = content;
 	}
 
-	public HeadImage getHeadImage() {
+	public byte[] getHeadImage() {
 		return headImage;
 	}
 
-	public void setHeadImage(HeadImage headImage) {
+	public void setHeadImage(byte[] headImage) {
 		this.headImage = headImage;
 	}
 

@@ -16,9 +16,9 @@ public class CreateGrourpReq implements Serializable{
 	/** 群标签 */
 	private String tag;
 	/** 群头像 */
-	private HeadImage headImage;
+	private byte[] headImage;
 
-	public CreateGrourpReq(String groupname, String tag, HeadImage headImage) {
+	public CreateGrourpReq(String groupname, String tag, byte[] headImage) {
 		super();
 		this.groupname = groupname;
 		this.tag = tag;
@@ -45,11 +45,11 @@ public class CreateGrourpReq implements Serializable{
 		this.tag = tag;
 	}
 
-	public final HeadImage getHeadImage() {
+	public final byte[] getHeadImage() {
 		return headImage;
 	}
 
-	public final void setHeadImage(HeadImage headImage) {
+	public final void setHeadImage(byte[] headImage) {
 		this.headImage = headImage;
 	}
 

@@ -3,15 +3,19 @@
  */
 package edu.csuft.chentao.pojo.resp;
 
-import edu.csuft.chentao.pojo.req.HeadImage;
+import java.io.Serializable;
+import java.util.Arrays;
+
 
 /**
  * @author csuft.chentao
  *
  *         2016年12月11日 下午8:56:28
  */
-public class GroupInfoResp {
+public class GroupInfoResp implements Serializable{
 
+	private static final long serialVersionUID = 1L;
+	
 	/** 群id */
 	private int groupid;
 	/** 群名称 */
@@ -21,10 +25,10 @@ public class GroupInfoResp {
 	/** 群人数 */
 	private int number;
 	/** 群头像 */
-	private HeadImage headImage;
+	private byte[] headImage;
 
 	public GroupInfoResp(int groupid, String groupname, String tag, int number,
-			HeadImage headImage) {
+			byte[] headImage) {
 		super();
 		this.groupid = groupid;
 		this.groupname = groupname;
@@ -69,12 +73,19 @@ public class GroupInfoResp {
 		this.number = number;
 	}
 
-	public HeadImage getHeadImage() {
+	public byte[] getHeadImage() {
 		return headImage;
 	}
 
-	public void setHeadImage(HeadImage headImage) {
+	public void setHeadImage(byte[] headImage) {
 		this.headImage = headImage;
+	}
+
+	@Override
+	public String toString() {
+		return "GroupInfoResp [groupid=" + groupid + ", groupname=" + groupname
+				+ ", tag=" + tag + ", number=" + number + ", headImage="
+				+ Arrays.toString(headImage) + "]";
 	}
 
 }

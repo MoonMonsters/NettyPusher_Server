@@ -19,12 +19,12 @@ public class RegisterReq implements Serializable{
 	/** 用户昵称 */
 	String nickname;
 	/** 头像 */
-	HeadImage headImage;
+	byte[] headImage;
 	/** 个性签名 */
 	String signature;
 
 	public RegisterReq(String username, String password, String nickname,
-			HeadImage headImage, String signature) {
+			byte[] headImage, String signature) {
 		super();
 		this.username = username;
 		this.password = password;
@@ -61,11 +61,11 @@ public class RegisterReq implements Serializable{
 		this.nickname = nickname;
 	}
 
-	public HeadImage getHeadImage() {
+	public byte[] getHeadImage() {
 		return headImage;
 	}
 
-	public void setHeadImage(HeadImage headImage) {
+	public void setHeadImage(byte[] headImage) {
 		this.headImage = headImage;
 	}
 

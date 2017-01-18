@@ -1,6 +1,7 @@
 package edu.csuft.chentao.pojo.req;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * 发送的消息
@@ -14,10 +15,6 @@ public class Message implements Serializable {
 
 	/** 用户id */
 	int userid;
-	/** 用户昵称 */
-	String nickname;
-	/** 头像，直接根据id值从数据表中读取，在客户端中，如果没有存储该图片，则从服务端取得 */
-	String headimage;
 	/** 群的id，表示在哪个群中发送的消息 */
 	int groupid;
 	/**
@@ -33,15 +30,12 @@ public class Message implements Serializable {
 	/** 发送的文字内容 */
 	String message;
 	/** 发送的图片 */
-	PicFile picFile;
+	byte[] picFile;
 
-	public Message(int userid, String nickname, String headimage,
-			int groupid, int typeMsg, int type, String time, String message,
-			PicFile picFile) {
+	public Message(int userid, int groupid, int typeMsg, int type, String time,
+			String message, byte[] picFile) {
 		super();
 		this.userid = userid;
-		this.nickname = nickname;
-		this.headimage = headimage;
 		this.groupid = groupid;
 		this.typeMsg = typeMsg;
 		this.type = type;
@@ -60,22 +54,6 @@ public class Message implements Serializable {
 
 	public void setUserid(int userid) {
 		this.userid = userid;
-	}
-
-	public String getNickname() {
-		return nickname;
-	}
-
-	public void setNickname(String nickname) {
-		this.nickname = nickname;
-	}
-
-	public String getHeadImageMd5() {
-		return headimage;
-	}
-
-	public void setHeadImageMd5(String headimage) {
-		this.headimage = headimage;
 	}
 
 	public int getGroupid() {
@@ -118,20 +96,20 @@ public class Message implements Serializable {
 		this.message = message;
 	}
 
-	public PicFile getPicFile() {
+	public byte[] getPicFile() {
 		return picFile;
 	}
 
-	public void setPicFile(PicFile picFile) {
+	public void setPicFile(byte[] picFile) {
 		this.picFile = picFile;
 	}
 
 	@Override
 	public String toString() {
-		return "MessageReq [userid=" + userid + ", nickname=" + nickname
-				+ ", headimage=" + headimage + ", groupid=" + groupid
+		return "Message [userid=" + userid + ", groupid=" + groupid
 				+ ", typeMsg=" + typeMsg + ", type=" + type + ", time=" + time
-				+ ", message=" + message + ", picFile=" + picFile + "]";
+				+ ", message=" + message + ", picFile="
+				+ Arrays.toString(picFile) + "]";
 	}
 
 }

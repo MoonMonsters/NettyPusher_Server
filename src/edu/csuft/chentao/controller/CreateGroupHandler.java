@@ -18,10 +18,13 @@ public class CreateGroupHandler implements Handler {
 
 	@Override
 	public void handle(ChannelHandlerContext chc, Object object) {
-		Logger.log("CreateGroupHandler-->handle");
+		Logger.log("CreateGroupHandler-->创建群操作");
 		CreateGrourpReq req = (CreateGrourpReq) object;
-		//执行插入操作，并且返回结果
+		// 执行插入操作，并且返回结果
 		CreateGroupResp resp = GroupTableOperate.insert(req);
+
+		Logger.log("CreateGroupResp-->返回创建群的群信息");
+
 		chc.writeAndFlush(resp);
 	}
 }

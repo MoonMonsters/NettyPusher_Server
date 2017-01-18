@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.csuft.chentao.util.Logger;
+
 /**
  * 管理客户端连接
  * 
@@ -28,6 +30,7 @@ public class NettyCollections {
 	 */
 	public static void add(Integer userid, ChannelHandlerContext chc) {
 		chcMap.put(userid, chc);
+		Logger.log("NettyCollections-->chcMap.size()"+chcMap.size());
 	}
 
 	/**

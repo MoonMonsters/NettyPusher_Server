@@ -1,8 +1,7 @@
 package edu.csuft.chentao.pojo.resp;
 
 import java.io.Serializable;
-
-import edu.csuft.chentao.pojo.req.HeadImage;
+import java.util.Arrays;
 
 /**
  * 用户信息，当加入群时，或者更新群联系人时，服务端存储用户数据并发送到客户端
@@ -21,12 +20,12 @@ public class UserInfoResp implements Serializable {
 	/** 用户昵称 */
 	private String nickname;
 	/** 头像 */
-	private HeadImage headImage;
+	private byte[] headImage;
 	/** 签名 */
 	private String signature;
 
 	public UserInfoResp(int type, int userid, String nickname,
-			HeadImage headImage, String signature) {
+			byte[] headImage, String signature) {
 		super();
 		this.type = type;
 		this.userid = userid;
@@ -63,11 +62,11 @@ public class UserInfoResp implements Serializable {
 		this.nickname = nickname;
 	}
 
-	public HeadImage getHeadImage() {
+	public byte[] getHeadImage() {
 		return headImage;
 	}
 
-	public void setHeadImage(HeadImage headImage) {
+	public void setHeadImage(byte[] headImage) {
 		this.headImage = headImage;
 	}
 
@@ -82,8 +81,10 @@ public class UserInfoResp implements Serializable {
 	@Override
 	public String toString() {
 		return "UserInfoResp [type=" + type + ", userid=" + userid
-				+ ", nickname=" + nickname + ", headImage=" + headImage
-				+ ", signature=" + signature + "]";
+				+ ", nickname=" + nickname + ", headImage="
+				+ Arrays.toString(headImage) + ", signature=" + signature + "]";
 	}
+
+	
 
 }

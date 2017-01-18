@@ -170,4 +170,34 @@ public class GroupUserTableOperate {
 		return list;
 	}
 
+	/**
+	 * 根據用戶id得到所有的群的id
+	 * @param userId 用戶id
+	 * @return 該用戶所在群的id集合
+	 */
+	public static List<Integer> selectGroupIdsWithUserId(int userId){
+		List<Integer> groupIdList = new ArrayList<Integer>();
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try{
+			String sql = "select " + GroupUserTable.GROUPID+" from " +
+					GroupUserTable.GROUPUSERTABLE + " where "+GroupUserTable.USERID + " = ? ";
+			ps = connection.prepareStatement(sql);
+			//设置用户id
+			ps.setInt(1, userId);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				groupIdList.add(rs.getInt(1));
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+		
+		return groupIdList;
+	}
+	
 }

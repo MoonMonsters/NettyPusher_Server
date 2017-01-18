@@ -16,9 +16,9 @@ public interface Constant {
 	int DEFAULT_GROUPID = 100000;
 
 	/** 注册失败，用户名重复 */
-	int REGISTER_TYPE_REPEAT_USERNAME = 0;
+	int TYPE_REGISTER_REPEAT_USERNAME = 0;
 	/** 注册成功 */
-	int REGISTER_TYPE_SUCCESS = 1;
+	int TYPE_REGISTER_SUCCESS = 1;
 
 	/** 创建群成功 */
 	int CREATE_GROUP_SUCCESS = 0;
@@ -46,10 +46,14 @@ public interface Constant {
 	int TYPE_LOGIN_AUTO = 0;
 	/** 新的登录 */
 	int TYPE_LOGIN_NEW = 1;
+	/** 其他用户信息 */
+	int TYPE_LOGIN_USER_INFO = 2;
 
 	/** 发送消息 */
 	int TYPE_MSG_SEND = 0;
 	/** 接收消息 */
 	int TYPE_MSG_RECV = 1;
+
+	String PATH = "./headimage";
 
 }

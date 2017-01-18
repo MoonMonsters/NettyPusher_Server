@@ -7,6 +7,7 @@ import edu.csuft.chentao.dao.UserTableOperate;
 import edu.csuft.chentao.pojo.req.UpdateUserInfoReq;
 import edu.csuft.chentao.pojo.resp.ReturnMessageResp;
 import edu.csuft.chentao.util.Constant;
+import edu.csuft.chentao.util.Logger;
 import edu.csuft.chentao.util.OperationUtil;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -19,6 +20,9 @@ public class UpdateUserInfoHandler implements Handler {
 
 	@Override
 	public void handle(ChannelHandlerContext chc, Object object) {
+
+		Logger.log("UpdateUserInfoHandler-->更新信息操作");
+
 		UpdateUserInfoReq req = (UpdateUserInfoReq) object;
 		ReturnMessageResp resp = null;
 
@@ -33,14 +37,11 @@ public class UpdateUserInfoHandler implements Handler {
 					req.getContent());
 		} else if (req.getType() == Constant.TYPE_UPDATE_HEADIMAGE) { // 更新头像
 			// 更改图片名
-			String filename = req.getHeadImage().getFilename();
-			req.getHeadImage().setFilename(
-					req.getUserid()
-							+ filename.substring(filename.lastIndexOf(".")));
 			// 重新保存一次头像
 			resp = new ReturnMessageResp();
 			try {
-				OperationUtil.saveHeadImage(req.getHeadImage());
+				OperationUtil
+						.saveHeadImage(req.getHeadImage(), req.getUserid());
 				resp.setType(Constant.TYPE_RETURN_MESSAGE_SUCCESS);
 				resp.setDescription("头像更改成功");
 			} catch (Exception e) {
@@ -50,7 +51,9 @@ public class UpdateUserInfoHandler implements Handler {
 			}
 		}
 
-		//返回结果
+		Logger.log("ReturnMessageResp-->返回更新后的信息");
+
+		// 返回结果
 		chc.writeAndFlush(resp);
 	}
 

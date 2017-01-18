@@ -15,24 +15,38 @@ import io.netty.channel.ChannelHandlerContext;
 /**
  * @author csuft.chentao
  *
- * 2016年12月9日 下午9:23:31
+ *         2016年12月9日 下午9:23:31
  */
 public class MessageHandler implements Handler {
 
 	@Override
 	public void handle(ChannelHandlerContext chc, Object object) {
-		Message message = (Message)object;
-		
+
+		Logger.log("MessageHandler-->发送群消息操作");
+
+		Message message = (Message) object;
+
+		// 将类型改变，发过来的时候，是发送类型，需要改成接收类型
 		message.setType(Constant.TYPE_MSG_RECV);
-		
-		//获得一个群中所有用户的id
-		List<Integer> useridList = GroupUserTableOperate.selectUserIdsWithGroupId(message.getGroupid());
-		
-		//因为是发送给其他人，所以需要移除掉自己本身的对象
+
+		// 获得一个群中所有用户的id
+		List<Integer> useridList = GroupUserTableOperate
+				.selectUserIdsWithGroupId(message.getGroupid());
+
+		// 因为是发送给其他人，所以需要移除掉自己本身的对象
 		int index = useridList.indexOf(message.getUserid());
-		useridList.remove(index);
+		if (index > -1) {
+			useridList.remove(index);
+		}
+
+		Logger.log("Message-->将消息发送给群里的其他用户");
+
+		message.setType(Constant.TYPE_MSG_RECV);
+		chc.writeAndFlush(message);
 		
-		//遍历所有需要发送的对象
+		Logger.log("Message-->返回给客户端");
+
+		// 遍历所有需要发送的对象
 		NettyCollections.traverse(useridList, message);
 	}
 

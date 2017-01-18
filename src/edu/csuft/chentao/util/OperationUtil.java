@@ -5,11 +5,10 @@ package edu.csuft.chentao.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import edu.csuft.chentao.controller.HeadImageHandler;
-import edu.csuft.chentao.pojo.req.HeadImage;
 
 /**
  * @author csuft.chentao
@@ -24,11 +23,24 @@ public class OperationUtil {
 	 * @param headImage
 	 *            头像类
 	 */
-	public static void saveHeadImage(HeadImage headImage) {
+	public static void saveHeadImage(byte[] headImage,int fileId) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				new HeadImageHandler().handle(null, headImage);
+				try{
+					File file = new File("./headimage",String.valueOf(fileId));
+					
+					//如果已经存在，则删除
+					if(file.exists()){
+						file.delete();
+					}
+					
+					FileOutputStream fos = new FileOutputStream(file);
+					fos.write(headImage);
+					fos.close();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
 			}
 		}).start();
 	}
@@ -48,26 +60,23 @@ public class OperationUtil {
 	}
 
 	/**
-	 * 根据文件名获得HeadImage对象
-	 * @param filename 文件名
+	 * 根据用户id从文件夹中得到该文件
+	 * @param userId 用户id
+	 * @return 文件的byte数组
 	 */
-	public static HeadImage getHeadImage(String filename) {
-		HeadImage headImage = new HeadImage();
-
-		try {
-			//在headimage目录下，获得filename文件
-			File file = new File("./headimage", filename);
+	public static byte[] getHeadImage(int fileId){
+		byte[] buf = null;
+		try{
+			File file = new File(Constant.PATH,String.valueOf(fileId));
 			FileInputStream fis = new FileInputStream(file);
 			int length = fis.available();
-			byte[] buf = new byte[length];
+			buf = new byte[length];
 			fis.read(buf, 0, length);
-			headImage.setBuf(buf);
-			headImage.setFilename(filename);
-			headImage.setLength(length);
-		} catch (Exception e) {
+			fis.close();
+		}catch(Exception e){
 			e.printStackTrace();
 		}
-
-		return headImage;
+		
+		return buf;
 	}
 }

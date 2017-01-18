@@ -3,13 +3,16 @@
  */
 package edu.csuft.chentao.pojo.resp;
 
+import java.io.Serializable;
+
 /**
  * @author csuft.chentao
  *
  *         2016年12月10日 下午8:51:31
  */
-public class CreateGroupResp {
+public class CreateGroupResp implements Serializable{
 
+	private static final long serialVersionUID = 1L;
 	/** 类型，是否创建成功 */
 	private int type;
 	/** 对类型的描述 */
