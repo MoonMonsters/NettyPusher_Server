@@ -9,8 +9,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.csuft.chentao.pojo.req.CreateGrourpReq;
-import edu.csuft.chentao.pojo.resp.CreateGroupResp;
+import edu.csuft.chentao.pojo.req.CreateGroupReq;
 import edu.csuft.chentao.pojo.resp.GroupInfoResp;
 import edu.csuft.chentao.util.Constant;
 import edu.csuft.chentao.util.OperationUtil;
@@ -23,11 +22,11 @@ import edu.csuft.chentao.util.OperationUtil;
 public class GroupTableOperate {
 
 	@SuppressWarnings("resource")
-	public static synchronized CreateGroupResp insert(CreateGrourpReq req) {
+	public static synchronized int insert(CreateGroupReq req) {
 		Connection connection = DaoConnection.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		CreateGroupResp resp = new CreateGroupResp();
+		int returnGroupId = -1;
 
 		try {
 			// 得到当前最大的群id
@@ -43,8 +42,7 @@ public class GroupTableOperate {
 			}
 
 			// 保存群头像
-			OperationUtil.saveHeadImage(req.getHeadImage(),
-					groupid);
+			OperationUtil.saveHeadImage(req.getHeadImage(), groupid);
 
 			// 设置群属性
 			ps = connection.prepareStatement("insert into "
@@ -55,27 +53,28 @@ public class GroupTableOperate {
 			ps.setInt(4, 0);
 
 			// 是否执行成功
-			if (ps.execute()) {
-				resp.setType(Constant.CREATE_GROUP_SUCCESS);
-				resp.setDescription(req.getGroupname() + "创建成功");
-				resp.setGroupid(groupid);
+			if (!ps.execute()) {
+				returnGroupId = groupid;
+				//将身份标识和用户id存入表中
+				GroupUserTableOperate.insert(groupid, req.getCreatorId(),
+						Constant.TYPE_GROUP_CAPITAL_OWNER);
 			} else {
-				resp.setType(Constant.CREATE_GROUP_FAIL);
-				resp.setDescription(req.getGroupname() + "创建失败，稍后再试");
+				System.out.println("GroupTableOperation-->执行失败");
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			OperationUtil.closeDataConnection(ps, rs);
 		}
-
-		return resp;
+		
+		return returnGroupId;
 	}
 
 	/**
 	 * 根据群id，得到所有群的信息
-	 * @param groupIdList 群id集合
+	 * 
+	 * @param groupIdList
+	 *            群id集合
 	 * @return 群信息集合
 	 */
 	public static List<GroupInfoResp> selectAllGroupInfosWithGroupIds(
@@ -95,18 +94,18 @@ public class GroupTableOperate {
 				ps.setInt(1, id);
 				rs = ps.executeQuery();
 				if (rs.next()) {
-					//群id
+					// 群id
 					int groupId = rs.getInt(1);
-					//群名称
+					// 群名称
 					String groupName = rs.getString(2);
-					//群标签
+					// 群标签
 					String tag = rs.getString(3);
-					//群里人数
+					// 群里人数
 					int number = rs.getInt(4);
 
-					//从文件中把头像读取出来
+					// 从文件中把头像读取出来
 					byte[] buf = OperationUtil.getHeadImage(groupId);
-					
+
 					GroupInfoResp resp = new GroupInfoResp();
 					resp.setGroupid(groupId);
 					resp.setGroupname(groupName);

@@ -33,7 +33,39 @@ public interface Constant {
 	/** 成功 */
 	int TYPE_RETURN_MESSAGE_SUCCESS = 0;
 	/** 失败 */
-	int TYPE_RETURN_MESSAGE_FAIL = 3;
+	int TYPE_RETURN_MESSAGE_FAIL = 1;
+	/**
+	 * 创建群成功
+	 */
+	int TYPE_RETURN_MESSAGE_CREATE_GROUP_SUCCESS = 2;
+	/**
+	 * 创建群失败
+	 */
+	int TYPE_RETURN_MESSAGE_CREATE_GROUP_FAIL = 3;
+	/**
+	 * 更新头像成功
+	 */
+	int TYPE_RETURN_MESSAGE_UPDATE_HEAD_IMAGE_SUCCESS = 4;
+	/**
+	 * 更新头像失败
+	 */
+	int TYPE_RETURN_MESSAGE_UPDATE_HEAD_IMAGE_FAIL = 5;
+	/**
+	 * 更新签名成功
+	 */
+	int TYPE_RETURN_MESSAGE_UPDATE_SIGNATURE_SUCESS = 6;
+	/**
+	 * 更新签名失败
+	 */
+	int TYPE_RETURN_MESSAGE_UPDATE_SIGNATURE_FAIL = 7;
+	/**
+	 * 更新昵称成功
+	 */
+	int TYPE_RETURN_MESSAGE_UPDATE_NICKNAME_SUCCESS = 8;
+	/**
+	 * 更新昵称失败
+	 */
+	int TYPE_RETURN_MESSAGE_UPDATE_NICKNAME_FAIL = 9;
 
 	/** 更新昵称 */
 	int TYPE_UPDATE_NICKNAME = 0;
@@ -56,4 +88,34 @@ public interface Constant {
 
 	String PATH = "./headimage";
 
+	
+	
+	
+	/*
+	 * 在群里的身份信息
+	 */
+	/**
+	 * 群主
+	 */
+	int TYPE_GROUP_CAPITAL_OWNER = 0;
+	/**
+	 * 管理员
+	 */
+	int TYPE_GROUP_CAPITAL_ADMIN = 1;
+	/**
+	 * 普通用户
+	 */
+	int TYPE_GROUP_CAPITAL_USER = 2;
+	
+	/*
+	 * 请求的数类型
+	 */
+	/**
+	 * 请求用户信息
+	 */
+	int TYPE_USER_GROUP_INFO_USER = 0;
+	/**
+	 * 请求群信息
+	 */
+	int TYPE_USER_GROUP_INFO_GROUP = 1;
 }

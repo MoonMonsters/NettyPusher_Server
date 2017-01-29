@@ -3,7 +3,8 @@
  */
 package edu.csuft.chentao.controller;
 
-import edu.csuft.chentao.pojo.req.CreateGrourpReq;
+import edu.csuft.chentao.pojo.req.CreateGroupReq;
+import edu.csuft.chentao.pojo.req.GetUserAndGroupInfoReq;
 import edu.csuft.chentao.pojo.req.GroupOperationReq;
 import edu.csuft.chentao.pojo.req.LoginReq;
 import edu.csuft.chentao.pojo.req.Message;
@@ -14,42 +15,47 @@ import edu.csuft.chentao.util.Logger;
 /**
  * @author csuft.chentao
  *
- * 2016年12月9日 下午8:52:30
+ *         2016年12月9日 下午8:52:30
  */
 public class MessageHandlerFactory {
 
 	/**
 	 * 根据object类型，返回对应处理对象
-	 * @param object 客户端发送的数据类型
+	 * 
+	 * @param object
+	 *            客户端发送的数据类型
 	 */
-	public static Handler getHandlerInstance(Object object){
+	public static Handler getHandlerInstance(Object object) {
 		Handler handler = null;
-		
+
 		String msg = "MessageHandlerFactory-->";
-		
-		if(object instanceof CreateGrourpReq){
+
+		if (object instanceof CreateGroupReq) { // 处理创建群消息
 			msg += "CreateGroupReq";
 			handler = new CreateGroupHandler();
-		}else if(object instanceof GroupOperationReq){
+		} else if (object instanceof GroupOperationReq) { // 群操作
 			msg += "GroupOperationReq";
 			handler = new GroupOperationHandler();
-		}else if(object instanceof LoginReq){
+		} else if (object instanceof LoginReq) { // 登录
 			msg += "LoginReq";
 			handler = new LoginHandler();
-		}else if(object instanceof Message){
+		} else if (object instanceof Message) { // 发送消息
 			msg += "MessageReq";
 			handler = new MessageHandler();
-		}else if(object instanceof RegisterReq){
+		} else if (object instanceof RegisterReq) { // 注册
 			msg += "RegisterReq";
 			handler = new RegisterHandler();
-		}else if(object instanceof UpdateUserInfoReq){
+		} else if (object instanceof UpdateUserInfoReq) { // 更新用户信息
 			msg += "UpdateInfoReq";
 			handler = new UpdateUserInfoHandler();
-		}
-		
+		} else if (object instanceof GetUserAndGroupInfoReq) { // 获得用户或者群信息
+			msg += "GetUserAndGroupInfoReq";
+			handler = new GetUserAndGroupInfoHandler();
+		} 
+
 		Logger.log(msg);
-		
+
 		return handler;
 	}
-	
+
 }

@@ -11,6 +11,9 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 
 /**
  * 服务器
@@ -44,19 +47,18 @@ public class Server {
 			serverBootstrap.childHandler(new ChannelInitializer<Channel>() {
 
 				@Override
-				protected void initChannel(Channel channel) throws Exception {
+				protected void initChannel(Channel ch) throws Exception {
 
-					channel.pipeline().addLast(
-							new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers
-									.weakCachingConcurrentResolver(null)));
-					channel.pipeline().addLast(new ObjectEncoder());
-					
-					channel.pipeline().addLast(new ServerHandler());
+					ch.pipeline().addLast(new ServerHandler());
+					ch.pipeline().addLast(new NettyMessageDecoder(1024*1024,  4, 4, -8, 0));
+					ch.pipeline().addLast(new NettyMessageEncoder());
+					ch.pipeline().addLast("readTimeoutHandler", new ReadTimeoutHandler(50));
+					ch.pipeline().addLast(new LoginAuthRespHandler());
+					ch.pipeline().addLast("HeartBeatHandler", new HeartBeatRespHandler());
 				}
 			});
 			// 绑定接口
-			ChannelFuture channelFuture = serverBootstrap.bind(10101)
-					.sync();
+			ChannelFuture channelFuture = serverBootstrap.bind(10101).sync();
 			// 等待关闭
 			channelFuture.channel().closeFuture().sync();
 		} catch (Exception e) {

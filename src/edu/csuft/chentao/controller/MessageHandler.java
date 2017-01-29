@@ -31,8 +31,8 @@ public class MessageHandler implements Handler {
 
 		// 获得一个群中所有用户的id
 		List<Integer> useridList = GroupUserTableOperate
-				.selectUserIdsWithGroupId(message.getGroupid());
-
+				.selectAllUserIdsWithGroupId(message.getGroupid());
+		
 		// 因为是发送给其他人，所以需要移除掉自己本身的对象
 		int index = useridList.indexOf(message.getUserid());
 		if (index > -1) {

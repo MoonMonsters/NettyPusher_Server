@@ -84,7 +84,4 @@ public class UserInfoResp implements Serializable {
 				+ ", nickname=" + nickname + ", headImage="
 				+ Arrays.toString(headImage) + ", signature=" + signature + "]";
 	}
-
-	
-
 }

@@ -11,10 +11,11 @@ package edu.csuft.chentao.dao;
 public class GroupUserTable {
 
 	public static final String GROUPUSERTABLE = "groupuser";
-	public static final String GROUPUSERTABLE_ALL_FIELD = "groupuser(groupid,userid)";
+	public static final String GROUPUSERTABLE_ALL_FIELD = "groupuser(groupid,userid,capital)";
 	public static final String ID = "id";
 	public static final String GROUPID = "groupid";
 	public static final String USERID = "userid";
+	public static final String CAPITAL = "capital";
 
 	/** id */
 	private int id;
@@ -22,12 +23,17 @@ public class GroupUserTable {
 	private int groupid;
 	/** 用户id */
 	private int userid;
+	/**
+	 * 用户身份
+	 */
+	private int capital;
 
-	public GroupUserTable(int id, int groupid, int userid) {
+	public GroupUserTable(int id, int groupid, int userid, int capital) {
 		super();
 		this.id = id;
 		this.groupid = groupid;
 		this.userid = userid;
+		this.capital = capital;
 	}
 
 	public GroupUserTable() {
@@ -57,4 +63,13 @@ public class GroupUserTable {
 	public void setUserid(int userid) {
 		this.userid = userid;
 	}
+
+	public int getCapital() {
+		return capital;
+	}
+
+	public void setCapital(int capital) {
+		this.capital = capital;
+	}
+
 }

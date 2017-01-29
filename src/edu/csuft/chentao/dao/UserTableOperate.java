@@ -123,10 +123,10 @@ public class UserTableOperate {
 			ps.setString(1, nickname);
 			ps.setInt(2, userid);
 			if (ps.executeUpdate() >= 1) {
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_SUCCESS);
+				resp.setType(Constant.TYPE_RETURN_MESSAGE_UPDATE_NICKNAME_SUCCESS);
 				resp.setDescription("更新昵称成功");
 			} else {
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_FAIL);
+				resp.setType(Constant.TYPE_RETURN_MESSAGE_UPDATE_NICKNAME_FAIL);
 				resp.setDescription("更新昵称失败");
 			}
 		} catch (Exception e) {
@@ -161,10 +161,10 @@ public class UserTableOperate {
 			ps.setString(1, signature);
 			ps.setInt(2, userid);
 			if (ps.executeUpdate() >= 1) {
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_SUCCESS);
+				resp.setType(Constant.TYPE_RETURN_MESSAGE_UPDATE_SIGNATURE_SUCESS);
 				resp.setDescription("更新签名成功");
 			} else {
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_FAIL);
+				resp.setType(Constant.TYPE_RETURN_MESSAGE_UPDATE_SIGNATURE_FAIL);
 				resp.setDescription("更新签名失败");
 			}
 		} catch (Exception e) {

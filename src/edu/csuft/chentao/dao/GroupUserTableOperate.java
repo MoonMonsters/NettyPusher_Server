@@ -11,6 +11,7 @@ import java.util.List;
 
 import edu.csuft.chentao.pojo.req.GroupOperationReq;
 import edu.csuft.chentao.pojo.resp.ReturnMessageResp;
+import edu.csuft.chentao.pojo.resp.UserCapitalResp;
 import edu.csuft.chentao.util.Constant;
 import edu.csuft.chentao.util.Logger;
 import edu.csuft.chentao.util.OperationUtil;
@@ -24,16 +25,24 @@ public class GroupUserTableOperate {
 
 	/**
 	 * 插入数据
+	 * 
+	 * @param groupId
+	 *            群id
+	 * @param userId
+	 *            用户id
+	 * @param capital
+	 *            身份值
+	 * @return
 	 */
-	public static synchronized ReturnMessageResp insert(GroupOperationReq req) {
+	public static synchronized ReturnMessageResp insert(int groupId,
+			int userId, int capital) {
 		Connection connection = DaoConnection.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
 		ReturnMessageResp resp = new ReturnMessageResp();
-
 		try {
-			if (isExit(connection, req.getGroupid(), req.getUserid())) { // 加入群失败
+			if (isExit(connection, groupId, userId)) { // 加入群失败
 				Logger.log("该用户已在群中");
 				resp.setType(Constant.TYPE_RETURN_MESSAGE_FAIL);
 				resp.setDescription("加入群失败");
@@ -42,13 +51,18 @@ public class GroupUserTableOperate {
 
 			// 插入数据
 			ps = connection.prepareCall("insert into "
-					+ GroupUserTable.GROUPUSERTABLE_ALL_FIELD + " values(?,?)");
-			ps.setInt(1, req.getGroupid());
-			ps.setInt(2, req.getUserid());
-			if (ps.execute()) { // 执行成功
+					+ GroupUserTable.GROUPUSERTABLE_ALL_FIELD
+					+ " values(?,?,?)");
+			ps.setInt(1, groupId);
+			ps.setInt(2, userId);
+			ps.setInt(3, capital);
+			System.out.println(groupId + "-->" + userId + "-->" + capital);
+			if (!ps.execute()) { // 执行成功
+				System.out.println("GroupUserTableOperation-->执行成功");
 				resp.setType(Constant.TYPE_RETURN_MESSAGE_SUCCESS);
 				resp.setDescription("加入群成功");
 			} else { // 执行失败
+				System.out.println("GroupUserTableOperation-->执行失败");
 				resp.setType(Constant.TYPE_RETURN_MESSAGE_FAIL);
 				resp.setDescription("加入群失败");
 			}
@@ -59,7 +73,6 @@ public class GroupUserTableOperate {
 		}
 
 		return resp;
-
 	}
 
 	/**
@@ -142,12 +155,49 @@ public class GroupUserTableOperate {
 	}
 
 	/**
-	 * 根据群id得到该群中所有的成员
-	 * @param groupid 群id
+	 * 根据群id得到该群中所有的成员id及其身份信息
+	 * 
+	 * @param groupid
+	 *            群id
 	 * @return 成员id列表
 	 */
-	public static List<Integer> selectUserIdsWithGroupId(int groupid) {
-		List<Integer> list = new ArrayList<Integer>();
+	public static List<UserCapitalResp> selectIdAndCapitalInUserWithGroupId(
+			int groupid) {
+		List<UserCapitalResp> userCapitalList = new ArrayList<UserCapitalResp>();
+
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			String sql = "select userid,capital from "
+					+ GroupUserTable.GROUPUSERTABLE + " where "
+					+ GroupUserTable.GROUPID + "=?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, groupid);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				userCapitalList.add(new UserCapitalResp(rs.getInt(1), rs
+						.getInt(2)));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return userCapitalList;
+	}
+
+	/**
+	 * 根据群id获取该群中所有用户的id
+	 * 
+	 * @param groupId
+	 *            群id
+	 */
+	public static List<Integer> selectAllUserIdsWithGroupId(int groupId) {
+		List<Integer> userIdList = new ArrayList<Integer>();
+
 		Connection connection = DaoConnection.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -156,10 +206,10 @@ public class GroupUserTableOperate {
 			String sql = "select userid from " + GroupUserTable.GROUPUSERTABLE
 					+ " where " + GroupUserTable.GROUPID + "=?";
 			ps = connection.prepareStatement(sql);
-			ps.setInt(1, groupid);
+			ps.setInt(1, groupId);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				list.add(rs.getInt(1));
+				userIdList.add(rs.getInt(1));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -167,37 +217,40 @@ public class GroupUserTableOperate {
 			OperationUtil.closeDataConnection(ps, rs);
 		}
 
-		return list;
+		return userIdList;
 	}
 
 	/**
 	 * 根據用戶id得到所有的群的id
-	 * @param userId 用戶id
+	 * 
+	 * @param userId
+	 *            用戶id
 	 * @return 該用戶所在群的id集合
 	 */
-	public static List<Integer> selectGroupIdsWithUserId(int userId){
+	public static List<Integer> selectGroupIdsWithUserId(int userId) {
 		List<Integer> groupIdList = new ArrayList<Integer>();
 		Connection connection = DaoConnection.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		
-		try{
-			String sql = "select " + GroupUserTable.GROUPID+" from " +
-					GroupUserTable.GROUPUSERTABLE + " where "+GroupUserTable.USERID + " = ? ";
+
+		try {
+			String sql = "select " + GroupUserTable.GROUPID + " from "
+					+ GroupUserTable.GROUPUSERTABLE + " where "
+					+ GroupUserTable.USERID + " = ? ";
 			ps = connection.prepareStatement(sql);
-			//设置用户id
+			// 设置用户id
 			ps.setInt(1, userId);
 			rs = ps.executeQuery();
-			while(rs.next()){
+			while (rs.next()) {
 				groupIdList.add(rs.getInt(1));
 			}
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
-		}finally{
+		} finally {
 			OperationUtil.closeDataConnection(ps, rs);
 		}
-		
+
 		return groupIdList;
 	}
-	
+
 }
