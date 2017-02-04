@@ -30,7 +30,8 @@ public class NettyCollections {
 	 */
 	public static void add(Integer userid, ChannelHandlerContext chc) {
 		chcMap.put(userid, chc);
-		Logger.log("NettyCollections-->chcMap.size()"+chcMap.size());
+		Logger.log("NettyCollections-->当前在线人数" + chcMap.size());
+		Logger.log("NettyCollections-->当前在线userId=" + userid);
 	}
 
 	/**
@@ -78,7 +79,8 @@ public class NettyCollections {
 		if (useridList.size() > 0) {
 			for (int userid : useridList) {
 				ChannelHandlerContext chc = chcMap.get(userid);
-				if(chc != null){
+				if (chc != null) {
+					Logger.log("应该收到消息的userId->"+userid);
 					chc.writeAndFlush(object);
 				}
 			}

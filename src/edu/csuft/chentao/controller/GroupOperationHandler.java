@@ -5,7 +5,7 @@ package edu.csuft.chentao.controller;
 
 import edu.csuft.chentao.dao.GroupUserTableOperate;
 import edu.csuft.chentao.pojo.req.GroupOperationReq;
-import edu.csuft.chentao.pojo.resp.ReturnMessageResp;
+import edu.csuft.chentao.pojo.resp.ReturnInfoResp;
 import edu.csuft.chentao.util.Constant;
 import edu.csuft.chentao.util.Logger;
 import io.netty.channel.ChannelHandlerContext;
@@ -23,7 +23,7 @@ public class GroupOperationHandler implements Handler {
 		Logger.log("GroupOperationHandler-->加入或者退出群操作");
 
 		GroupOperationReq req = (GroupOperationReq) object;
-		ReturnMessageResp resp = null;
+		ReturnInfoResp resp = null;
 		if (req.getType() == Constant.TYPE_GROUP_ENTER) { // 加群
 			resp = GroupUserTableOperate.insert(req.getGroupid(),
 					req.getUserid(), Constant.TYPE_GROUP_CAPITAL_USER);

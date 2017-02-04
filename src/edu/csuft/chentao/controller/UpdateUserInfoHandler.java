@@ -5,7 +5,7 @@ package edu.csuft.chentao.controller;
 
 import edu.csuft.chentao.dao.UserTableOperate;
 import edu.csuft.chentao.pojo.req.UpdateUserInfoReq;
-import edu.csuft.chentao.pojo.resp.ReturnMessageResp;
+import edu.csuft.chentao.pojo.resp.ReturnInfoResp;
 import edu.csuft.chentao.util.Constant;
 import edu.csuft.chentao.util.Logger;
 import edu.csuft.chentao.util.OperationUtil;
@@ -24,7 +24,7 @@ public class UpdateUserInfoHandler implements Handler {
 		Logger.log("UpdateUserInfoHandler-->更新信息操作");
 
 		UpdateUserInfoReq req = (UpdateUserInfoReq) object;
-		ReturnMessageResp resp = null;
+		ReturnInfoResp resp = null;
 
 		/*
 		 * req.getContent就包括了签名和昵称两种类型，在客户端就设置好
@@ -38,15 +38,15 @@ public class UpdateUserInfoHandler implements Handler {
 		} else if (req.getType() == Constant.TYPE_UPDATE_HEADIMAGE) { // 更新头像
 			// 更改图片名
 			// 重新保存一次头像
-			resp = new ReturnMessageResp();
+			resp = new ReturnInfoResp();
 			try {
 				OperationUtil
 						.saveHeadImage(req.getHeadImage(), req.getUserid());
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_UPDATE_HEAD_IMAGE_SUCCESS);
+				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_HEAD_IMAGE_SUCCESS);
 				resp.setDescription("头像更改成功");
 			} catch (Exception e) {
 				e.printStackTrace();
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_UPDATE_HEAD_IMAGE_FAIL);
+				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_HEAD_IMAGE_FAIL);
 				resp.setDescription("头像更改失败");
 			}
 		}

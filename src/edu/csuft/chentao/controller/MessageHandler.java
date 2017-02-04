@@ -39,13 +39,9 @@ public class MessageHandler implements Handler {
 			useridList.remove(index);
 		}
 
-		Logger.log("Message-->将消息发送给群里的其他用户");
-
-		message.setType(Constant.TYPE_MSG_RECV);
+//		message.setType(Constant.TYPE_MSG_RECV);
 		chc.writeAndFlush(message);
 		
-		Logger.log("Message-->返回给客户端");
-
 		// 遍历所有需要发送的对象
 		NettyCollections.traverse(useridList, message);
 	}

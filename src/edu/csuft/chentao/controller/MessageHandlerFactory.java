@@ -4,9 +4,11 @@
 package edu.csuft.chentao.controller;
 
 import edu.csuft.chentao.pojo.req.CreateGroupReq;
+import edu.csuft.chentao.pojo.req.GetInfoReq;
 import edu.csuft.chentao.pojo.req.GetUserAndGroupInfoReq;
 import edu.csuft.chentao.pojo.req.GroupOperationReq;
 import edu.csuft.chentao.pojo.req.LoginReq;
+import edu.csuft.chentao.pojo.req.ManagerUserReq;
 import edu.csuft.chentao.pojo.req.Message;
 import edu.csuft.chentao.pojo.req.RegisterReq;
 import edu.csuft.chentao.pojo.req.UpdateUserInfoReq;
@@ -51,7 +53,13 @@ public class MessageHandlerFactory {
 		} else if (object instanceof GetUserAndGroupInfoReq) { // 获得用户或者群信息
 			msg += "GetUserAndGroupInfoReq";
 			handler = new GetUserAndGroupInfoHandler();
-		} 
+		} else if (object instanceof ManagerUserReq) { // 修改用户身份信息
+			msg += "ManagerUserReq";
+			handler = new ManagerUserHandler();
+		} else if (object instanceof GetInfoReq) {	//客户端向服务端请求数据
+			msg += "GetInfoReq";
+			handler = new GetInfoHandler();
+		}
 
 		Logger.log(msg);
 

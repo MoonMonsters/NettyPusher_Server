@@ -10,7 +10,7 @@ import java.io.Serializable;
  *
  *         2016年12月11日 下午8:52:29
  */
-public class ReturnMessageResp implements Serializable{
+public class ReturnInfoResp implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	/** 类型，成功or失败 */
@@ -18,13 +18,13 @@ public class ReturnMessageResp implements Serializable{
 	/** 对类型的描述 */
 	private String description;
 
-	public ReturnMessageResp(int type, String description) {
+	public ReturnInfoResp(int type, String description) {
 		super();
 		this.type = type;
 		this.description = description;
 	}
 
-	public ReturnMessageResp() {
+	public ReturnInfoResp() {
 		super();
 	}
 

@@ -6,7 +6,7 @@ package edu.csuft.chentao.controller;
 import edu.csuft.chentao.dao.GroupTableOperate;
 import edu.csuft.chentao.pojo.req.CreateGroupReq;
 import edu.csuft.chentao.pojo.resp.GroupInfoResp;
-import edu.csuft.chentao.pojo.resp.ReturnMessageResp;
+import edu.csuft.chentao.pojo.resp.ReturnInfoResp;
 import edu.csuft.chentao.util.Constant;
 import edu.csuft.chentao.util.Logger;
 import io.netty.channel.ChannelHandlerContext;
@@ -25,7 +25,7 @@ public class CreateGroupHandler implements Handler {
 		// 执行插入操作，并且返回结果
 		int groupId = GroupTableOperate.insert(req);
 
-		ReturnMessageResp resp = new ReturnMessageResp();
+		ReturnInfoResp resp = new ReturnInfoResp();
 
 		Logger.log("创建群是否成功-->" + (groupId == -1 ? false : true));
 
@@ -34,7 +34,7 @@ public class CreateGroupHandler implements Handler {
 		 */
 		if (groupId != -1) {
 			resp.setDescription(req.getGroupname() + "创建成功");
-			resp.setType(Constant.TYPE_RETURN_MESSAGE_CREATE_GROUP_SUCCESS);
+			resp.setType(Constant.TYPE_RETURN_INFO_CREATE_GROUP_SUCCESS);
 			GroupInfoResp resp2 = new GroupInfoResp();
 			resp2.setGroupid(groupId);
 			resp2.setGroupname(req.getGroupname());
@@ -44,7 +44,7 @@ public class CreateGroupHandler implements Handler {
 			chc.writeAndFlush(resp2);
 		} else {
 			resp.setDescription(req.getGroupname() + "创建失败，请稍后再试");
-			resp.setType(Constant.TYPE_RETURN_MESSAGE_CREATE_GROUP_FAIL);
+			resp.setType(Constant.TYPE_RETURN_INFO_CREATE_GROUP_FAIL);
 		}
 
 		Logger.log("CreateGroupHandler-->返回创建群的群信息");

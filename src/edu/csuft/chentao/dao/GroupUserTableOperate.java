@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.csuft.chentao.pojo.req.GroupOperationReq;
-import edu.csuft.chentao.pojo.resp.ReturnMessageResp;
+import edu.csuft.chentao.pojo.resp.ReturnInfoResp;
 import edu.csuft.chentao.pojo.resp.UserCapitalResp;
 import edu.csuft.chentao.util.Constant;
 import edu.csuft.chentao.util.Logger;
@@ -34,17 +34,17 @@ public class GroupUserTableOperate {
 	 *            身份值
 	 * @return
 	 */
-	public static synchronized ReturnMessageResp insert(int groupId,
+	public static synchronized ReturnInfoResp insert(int groupId,
 			int userId, int capital) {
 		Connection connection = DaoConnection.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
-		ReturnMessageResp resp = new ReturnMessageResp();
+		ReturnInfoResp resp = new ReturnInfoResp();
 		try {
 			if (isExit(connection, groupId, userId)) { // 加入群失败
 				Logger.log("该用户已在群中");
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_FAIL);
+				resp.setType(Constant.TYPE_RETURN_INFO_FAIL);
 				resp.setDescription("加入群失败");
 				return resp;
 			}
@@ -59,11 +59,11 @@ public class GroupUserTableOperate {
 			System.out.println(groupId + "-->" + userId + "-->" + capital);
 			if (!ps.execute()) { // 执行成功
 				System.out.println("GroupUserTableOperation-->执行成功");
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_SUCCESS);
+				resp.setType(Constant.TYPE_RETURN_INFO_SUCCESS);
 				resp.setDescription("加入群成功");
 			} else { // 执行失败
 				System.out.println("GroupUserTableOperation-->执行失败");
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_FAIL);
+				resp.setType(Constant.TYPE_RETURN_INFO_FAIL);
 				resp.setDescription("加入群失败");
 			}
 		} catch (Exception e) {
@@ -78,13 +78,13 @@ public class GroupUserTableOperate {
 	/**
 	 * 移除数据
 	 */
-	public static synchronized ReturnMessageResp remove(GroupOperationReq req) {
+	public static synchronized ReturnInfoResp remove(GroupOperationReq req) {
 
 		Connection connection = DaoConnection.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
-		ReturnMessageResp resp = new ReturnMessageResp();
+		ReturnInfoResp resp = new ReturnInfoResp();
 
 		try {
 
@@ -96,14 +96,14 @@ public class GroupUserTableOperate {
 				ps.setInt(1, req.getGroupid());
 				ps.setInt(2, req.getUserid());
 				if (ps.execute()) {
-					resp.setType(Constant.TYPE_RETURN_MESSAGE_SUCCESS);
+					resp.setType(Constant.TYPE_RETURN_INFO_SUCCESS);
 					resp.setDescription("退出群成功");
 				} else {
-					resp.setType(Constant.TYPE_RETURN_MESSAGE_FAIL);
+					resp.setType(Constant.TYPE_RETURN_INFO_FAIL);
 					resp.setDescription("退出群失败");
 				}
 			} else {
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_FAIL);
+				resp.setType(Constant.TYPE_RETURN_INFO_FAIL);
 				resp.setDescription("退出群失败");
 			}
 
@@ -251,6 +251,49 @@ public class GroupUserTableOperate {
 		}
 
 		return groupIdList;
+	}
+
+	/**
+	 * 更新用户的身份
+	 * 
+	 * @param userId
+	 *            需要更新的用户id
+	 * @param groupId
+	 *            群id
+	 * @param capital
+	 *            新的身份
+	 */
+	public static ReturnInfoResp updateCapital(int userId, int groupId,
+			int capital) {
+		ReturnInfoResp resp = new ReturnInfoResp();
+
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			String sql = "update " + GroupUserTable.GROUPUSERTABLE + " set "
+					+ GroupUserTable.CAPITAL + "=? where "
+					+ GroupUserTable.USERID + "=? and "
+					+ GroupUserTable.GROUPID + "=?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, capital);
+			ps.setInt(2, userId);
+			ps.setInt(3, groupId);
+			if(ps.executeUpdate() > 0){
+				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_USER_CAPITAL_SUCCESS);
+				resp.setDescription("更新成功");
+			}else{
+				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_USER_CAPITAL_FAIL);
+				resp.setDescription("更新失败，请稍后再试");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return resp;
 	}
 
 }

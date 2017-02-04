@@ -31,41 +31,70 @@ public interface Constant {
 	int TYPE_GROUP_EXIT = 1;
 
 	/** 成功 */
-	int TYPE_RETURN_MESSAGE_SUCCESS = 0;
+	int TYPE_RETURN_INFO_SUCCESS = 0;
 	/** 失败 */
-	int TYPE_RETURN_MESSAGE_FAIL = 1;
+	int TYPE_RETURN_INFO_FAIL = 1;
 	/**
 	 * 创建群成功
 	 */
-	int TYPE_RETURN_MESSAGE_CREATE_GROUP_SUCCESS = 2;
+	int TYPE_RETURN_INFO_CREATE_GROUP_SUCCESS = 2;
 	/**
 	 * 创建群失败
 	 */
-	int TYPE_RETURN_MESSAGE_CREATE_GROUP_FAIL = 3;
+	int TYPE_RETURN_INFO_CREATE_GROUP_FAIL = 3;
 	/**
 	 * 更新头像成功
 	 */
-	int TYPE_RETURN_MESSAGE_UPDATE_HEAD_IMAGE_SUCCESS = 4;
+	int TYPE_RETURN_INFO_UPDATE_HEAD_IMAGE_SUCCESS = 4;
 	/**
 	 * 更新头像失败
 	 */
-	int TYPE_RETURN_MESSAGE_UPDATE_HEAD_IMAGE_FAIL = 5;
+	int TYPE_RETURN_INFO_UPDATE_HEAD_IMAGE_FAIL = 5;
 	/**
 	 * 更新签名成功
 	 */
-	int TYPE_RETURN_MESSAGE_UPDATE_SIGNATURE_SUCESS = 6;
+	int TYPE_RETURN_INFO_UPDATE_SIGNATURE_SUCESS = 6;
 	/**
 	 * 更新签名失败
 	 */
-	int TYPE_RETURN_MESSAGE_UPDATE_SIGNATURE_FAIL = 7;
+	int TYPE_RETURN_INFO_UPDATE_SIGNATURE_FAIL = 7;
 	/**
 	 * 更新昵称成功
 	 */
-	int TYPE_RETURN_MESSAGE_UPDATE_NICKNAME_SUCCESS = 8;
+	int TYPE_RETURN_INFO_UPDATE_NICKNAME_SUCCESS = 8;
 	/**
 	 * 更新昵称失败
 	 */
-	int TYPE_RETURN_MESSAGE_UPDATE_NICKNAME_FAIL = 9;
+	int TYPE_RETURN_INFO_UPDATE_NICKNAME_FAIL = 9;
+	/**
+	 * 更新用户身份成功
+	 */
+	int TYPE_RETURN_INFO_UPDATE_USER_CAPITAL_SUCCESS = 10;
+	/**
+	 * 更新用户身份失败
+	 */
+	int TYPE_RETURN_INFO_UPDATE_USER_CAPITAL_FAIL = 11;
+
+	/**
+	 * 获取用户数据
+	 */
+	int TYPE_GET_INFO_USERINFO = 0;
+	/**
+	 * 退出登录
+	 */
+	int TYPE_GET_INFO_UNLOGIN = 1;
+	/**
+	 * 根据群id搜索
+	 */
+	int TYPE_GET_INFO_SEARCH_GROUP_ID = 2;
+	/**
+	 * 根据群名搜索
+	 */
+	int TYPE_GET_INFO_SEARCH_GROUP_NAME = 3;
+	/**
+	 * 根据标签搜索
+	 */
+	int TYPE_GET_INFO_SEARCH_GROUP_TAG = 4;
 
 	/** 更新昵称 */
 	int TYPE_UPDATE_NICKNAME = 0;
@@ -88,9 +117,6 @@ public interface Constant {
 
 	String PATH = "./headimage";
 
-	
-	
-	
 	/*
 	 * 在群里的身份信息
 	 */
@@ -106,7 +132,7 @@ public interface Constant {
 	 * 普通用户
 	 */
 	int TYPE_GROUP_CAPITAL_USER = 2;
-	
+
 	/*
 	 * 请求的数类型
 	 */

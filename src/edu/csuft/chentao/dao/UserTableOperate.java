@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 import edu.csuft.chentao.pojo.req.RegisterReq;
 import edu.csuft.chentao.pojo.resp.RegisterResp;
-import edu.csuft.chentao.pojo.resp.ReturnMessageResp;
+import edu.csuft.chentao.pojo.resp.ReturnInfoResp;
 import edu.csuft.chentao.pojo.resp.UserInfoResp;
 import edu.csuft.chentao.util.Constant;
 import edu.csuft.chentao.util.Logger;
@@ -106,13 +106,13 @@ public class UserTableOperate {
 	 * @param nickname
 	 *            待更新的昵称
 	 */
-	public static synchronized ReturnMessageResp updateUserNickname(int userid,
+	public static synchronized ReturnInfoResp updateUserNickname(int userid,
 			String nickname) {
 		Connection connection = DaoConnection.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
-		ReturnMessageResp resp = new ReturnMessageResp();
+		ReturnInfoResp resp = new ReturnInfoResp();
 
 		try {
 			String sql = "update " + UserTable.USERTABLE + " set "
@@ -123,10 +123,10 @@ public class UserTableOperate {
 			ps.setString(1, nickname);
 			ps.setInt(2, userid);
 			if (ps.executeUpdate() >= 1) {
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_UPDATE_NICKNAME_SUCCESS);
+				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_NICKNAME_SUCCESS);
 				resp.setDescription("更新昵称成功");
 			} else {
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_UPDATE_NICKNAME_FAIL);
+				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_NICKNAME_FAIL);
 				resp.setDescription("更新昵称失败");
 			}
 		} catch (Exception e) {
@@ -146,13 +146,13 @@ public class UserTableOperate {
 	 * @param signature
 	 *            待更新签名
 	 */
-	public static synchronized ReturnMessageResp updateUserSignature(
+	public static synchronized ReturnInfoResp updateUserSignature(
 			int userid, String signature) {
 		Connection connection = DaoConnection.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
-		ReturnMessageResp resp = new ReturnMessageResp();
+		ReturnInfoResp resp = new ReturnInfoResp();
 
 		try {
 			ps = connection.prepareStatement("update " + UserTable.USERTABLE
@@ -161,10 +161,10 @@ public class UserTableOperate {
 			ps.setString(1, signature);
 			ps.setInt(2, userid);
 			if (ps.executeUpdate() >= 1) {
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_UPDATE_SIGNATURE_SUCESS);
+				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_SIGNATURE_SUCESS);
 				resp.setDescription("更新签名成功");
 			} else {
-				resp.setType(Constant.TYPE_RETURN_MESSAGE_UPDATE_SIGNATURE_FAIL);
+				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_SIGNATURE_FAIL);
 				resp.setDescription("更新签名失败");
 			}
 		} catch (Exception e) {
@@ -288,7 +288,6 @@ public class UserTableOperate {
 				resp.setSignature(rs.getString(3));
 				//头像
 				resp.setHeadImage(OperationUtil.getHeadImage(resp.getUserid()));
-				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

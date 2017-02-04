@@ -3,7 +3,6 @@
  */
 package edu.csuft.chentao.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.csuft.chentao.dao.GroupTableOperate;
@@ -67,16 +66,16 @@ public class LoginHandler implements Handler {
 				/**
 				 * 得到所有用户信息
 				 */
-				List<Integer> userIdList = new ArrayList<Integer>();
-				List<UserInfoResp> userInfoList = new ArrayList<>();
-				for (int groupId : groupIdList) {
-					userIdList.addAll(GroupUserTableOperate
-							.selectAllUserIdsWithGroupId(groupId));
-				}
-				for (int userId : userIdList) {
-					userInfoList.add(UserTableOperate
-							.selectUserInfoWithUserId(userId));
-				}
+//				List<Integer> userIdList = new ArrayList<Integer>();
+//				List<UserInfoResp> userInfoList = new ArrayList<>();
+//				for (int groupId : groupIdList) {
+//					userIdList.addAll(GroupUserTableOperate
+//							.selectAllUserIdsWithGroupId(groupId));
+//				}
+//				for (int userId : userIdList) {
+//					userInfoList.add(UserTableOperate
+//							.selectUserInfoWithUserId(userId));
+//				}
 
 				// 在子线程中发送所有数据
 				new Thread(new Runnable() {
@@ -90,9 +89,9 @@ public class LoginHandler implements Handler {
 						/**
 						 * 发送所有用户数据
 						 */
-						for (UserInfoResp resp : userInfoList) {
-							chc.writeAndFlush(resp);
-						}
+//						for (UserInfoResp resp : userInfoList) {
+//							chc.writeAndFlush(resp);
+//						}
 					}
 				}).start();
 			}

@@ -124,5 +124,52 @@ public class GroupTableOperate {
 
 		return respList;
 	}
+	
+	/**
+	 * 根据群id获取群数据
+	 * @param groupId 群id
+	 * @return GroupInfoResp对象
+	 */
+	public static GroupInfoResp getGroupInfoWithId(int groupId){
+		GroupInfoResp resp = new GroupInfoResp();
+		
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try{
+			String sql = "select groupid,groupname,tag,number from "
+					+ GroupTable.GROUPTABLE + " where " + GroupTable.GROUPID
+					+ " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, groupId);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				// 群id
+				int id = rs.getInt(1);
+				// 群名称
+				String groupName = rs.getString(2);
+				// 群标签
+				String tag = rs.getString(3);
+				// 群里人数
+				int number = rs.getInt(4);
+
+				// 从文件中把头像读取出来
+				byte[] buf = OperationUtil.getHeadImage(id);
+
+				resp.setGroupid(groupId);
+				resp.setGroupname(groupName);
+				resp.setHeadImage(buf);
+				resp.setNumber(number);
+				resp.setTag(tag);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+		
+		return resp;
+	}
 
 }
