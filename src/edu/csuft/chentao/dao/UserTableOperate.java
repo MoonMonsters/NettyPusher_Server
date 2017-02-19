@@ -67,8 +67,7 @@ public class UserTableOperate {
 			}
 
 			// 保存头像
-			OperationUtil.saveHeadImage(req.getHeadImage(),
-					userid);
+			OperationUtil.saveHeadImage(req.getHeadImage(), userid);
 
 			ps = connection.prepareStatement("insert into "
 					+ UserTable.USERTABLE_ALL_FIELD + " values(?,?,?,?,?)");
@@ -118,7 +117,6 @@ public class UserTableOperate {
 			String sql = "update " + UserTable.USERTABLE + " set "
 					+ UserTable.NICKNAME + " = ?" + " where "
 					+ UserTable.USERID + " = ?";
-			Logger.log(sql);
 			ps = connection.prepareStatement(sql);
 			ps.setString(1, nickname);
 			ps.setInt(2, userid);
@@ -146,8 +144,8 @@ public class UserTableOperate {
 	 * @param signature
 	 *            待更新签名
 	 */
-	public static synchronized ReturnInfoResp updateUserSignature(
-			int userid, String signature) {
+	public static synchronized ReturnInfoResp updateUserSignature(int userid,
+			String signature) {
 		Connection connection = DaoConnection.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -279,14 +277,14 @@ public class UserTableOperate {
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, userId);
 			rs = ps.executeQuery();
-			if(rs.next()){
-				//用户id
+			if (rs.next()) {
+				// 用户id
 				resp.setUserid(rs.getInt(1));
-				//昵称
+				// 昵称
 				resp.setNickname(rs.getString(2));
-				//签名
+				// 签名
 				resp.setSignature(rs.getString(3));
-				//头像
+				// 头像
 				resp.setHeadImage(OperationUtil.getHeadImage(resp.getUserid()));
 			}
 		} catch (Exception e) {
@@ -298,4 +296,68 @@ public class UserTableOperate {
 		return resp;
 	}
 
+	/**
+	 * 根据用户id得到用户名
+	 */
+	public static String getUsernameWithUserId(int userId) {
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		String name = null;
+
+		try {
+			String sql = "select " + UserTable.USERNAME + " from "
+					+ UserTable.USERTABLE + " where " + UserTable.USERID
+					+ " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, userId);
+			rs = ps.executeQuery();
+			if (rs.next()) { // 如果查询到数据
+				name = rs.getString(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return name;
+	}
+
+	/**
+	 * 判断用户名在数据表中是否存在
+	 * 
+	 * @param userId
+	 *            用户id
+	 * @return 是否存在
+	 */
+	public static boolean isExitUserWithUserId(int userId) {
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		boolean result = false;
+
+		try {
+			String sql = "select "+UserTable.USERNAME+" from " + UserTable.USERTABLE
+					+ " where " + UserTable.USERID + " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, userId);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				String username = rs.getString(1);
+				Logger.log("isExitUserWithUserId-->" + username);
+				if (username != null) {
+					result = true;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return result;
+	}
 }

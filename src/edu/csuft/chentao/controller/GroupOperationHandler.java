@@ -3,8 +3,16 @@
  */
 package edu.csuft.chentao.controller;
 
+import java.util.List;
+
+import edu.csuft.chentao.dao.GroupOperationTable;
+import edu.csuft.chentao.dao.GroupOperationTableOperate;
+import edu.csuft.chentao.dao.GroupTableOperate;
 import edu.csuft.chentao.dao.GroupUserTableOperate;
+import edu.csuft.chentao.dao.UserTableOperate;
 import edu.csuft.chentao.pojo.req.GroupOperationReq;
+import edu.csuft.chentao.pojo.resp.GroupInfoResp;
+import edu.csuft.chentao.pojo.resp.GroupReminderResp;
 import edu.csuft.chentao.pojo.resp.ReturnInfoResp;
 import edu.csuft.chentao.util.Constant;
 import edu.csuft.chentao.util.Logger;
@@ -20,20 +28,154 @@ public class GroupOperationHandler implements Handler {
 	@Override
 	public void handle(ChannelHandlerContext chc, Object object) {
 
-		Logger.log("GroupOperationHandler-->加入或者退出群操作");
-
 		GroupOperationReq req = (GroupOperationReq) object;
-		ReturnInfoResp resp = null;
-		if (req.getType() == Constant.TYPE_GROUP_ENTER) { // 加群
-			resp = GroupUserTableOperate.insert(req.getGroupid(),
-					req.getUserid(), Constant.TYPE_GROUP_CAPITAL_USER);
-		} else if (req.getType() == Constant.TYPE_GROUP_EXIT) { // 退群
-			resp = GroupUserTableOperate.remove(req);
+		GroupInfoResp groupInfo = GroupTableOperate.getGroupInfoWithId(req
+				.getGroupId());
+
+		if (req.getType() == Constant.TYPE_GROUP_OPERATION_EXIT_BY_MYSELF) { // 自己退出
+
+			Logger.log("自己退出群");
+			boolean result = GroupUserTableOperate.exitGroup(req.getGroupId(),
+					req.getUserId1());
+			if (result) { // 如果退出成功
+
+				GroupReminderResp resp = new GroupReminderResp();
+				resp.setType(Constant.TYPE_GROUP_REMINDER_EXIT_BY_MYSELF);
+				resp.setGroupId(req.getGroupId());
+				resp.setImage(groupInfo.getHeadImage());
+				resp.setDescription("退出群成功");
+				resp.setGroupName(groupInfo.getGroupname());
+				resp.setUserId(req.getUserId1());
+
+				chc.writeAndFlush(resp);
+			} else { // 退出群失败
+				ReturnInfoResp resp = new ReturnInfoResp();
+				resp.setType(Constant.TYPE_RETURN_INFO_EXIT_GROUP_FAIL);
+				resp.setDescription("退出群失败，请查证后再试");
+
+				chc.writeAndFlush(resp);
+			}
+		} else if (req.getType() == Constant.TYPE_GROUP_OPERATION_EXIT_BY_ADMIN) { // 被踢出
+
+			Logger.log("踢出群");
+			int userId = req.getUserId1();
+			int groupId = req.getGroupId();
+			boolean result = GroupUserTableOperate.exitGroup(req.getGroupId(),
+					req.getUserId1());
+			if (result) { // 踢出成功
+				GroupOperationTable table = new GroupOperationTable();
+				table.setDescription("你已被踢出群");
+				table.setGroupId(groupId);
+				table.setReaderId(userId);
+				table.setType(Constant.TYPE_GROUP_REMINDER_REMOVE_USER);
+				table.setUserId(userId);
+
+				GroupOperationTableOperate.insert(table);
+
+				// ReturnInfoResp
+			} else { // 踢出失败
+				// ReturnInfoResp
+			}
+		} else if (req.getType() == Constant.TYPE_GROUP_OPERATION_ADD_BY_MYSELF) { // 自己申请加入群
+
+			int userId = req.getUserId1();
+			int groupId = req.getGroupId();
+
+			Logger.log(userId + "自己申请加入群" + groupId);
+
+			// 如果申请的群不存在
+			if (GroupTableOperate.isExitGroupWithGroupId(groupId)) {
+				Logger.log(groupId + " 群不存在");
+				// ReturnInfoResp
+			} else if (!GroupUserTableOperate.isExit(groupId, userId)) { // 如果不是群成员
+
+				Logger.log("在群里不存在");
+
+				String name = UserTableOperate.getUsernameWithUserId(userId);
+				List<Integer> readerIdList = GroupUserTableOperate
+						.getCapital_0_WithGroupId(groupId);
+
+				GroupOperationTable table = new GroupOperationTable();
+				table.setDescription(name + " 申请加入群");
+				table.setGroupId(groupId);
+				table.setType(Constant.TYPE_GROUP_REMINDER_WANT_TO_ADD_GROUP);
+				table.setUserId(userId);
+
+				Logger.log("申请加入群时，群管理人员数量->" + readerIdList.size());
+
+				for (int readerId : readerIdList) {
+					// 设置不同的读取消息用户
+					table.setReaderId(readerId);
+					GroupOperationTableOperate.insert(table);
+				}
+			} else if (GroupUserTableOperate.isExit(groupId, userId)) { // 如果在群里已经存在
+				Logger.log("在群里已经存在");
+				// ReturnInfoResp
+			}
+		} else if (req.getType() == Constant.TYPE_GROUP_OPERATION_ADD_BY_INVITE) { // 被邀请加入群
+			Logger.log("邀请加入群");
+
+			// 被邀请人id
+			int userId1 = req.getUserId1();
+			// 群id
+			int groupId = req.getGroupId();
+
+			if(!UserTableOperate.isExitUserWithUserId(userId1)){	//被邀请人用户id错误，不存在该用户
+				
+			}else if (!GroupUserTableOperate.isExit(groupId, userId1)) {	//如果该用户不在该群里
+				Logger.log(userId1 + "不存在，可以插入");
+				int userId2 = req.getUserId2();
+				// 获得邀请人的姓名
+				String userName2 = UserTableOperate
+						.getUsernameWithUserId(userId2);
+				GroupOperationTable table = new GroupOperationTable();
+				table.setDescription(userName2 + "邀请你加入群");
+				table.setGroupId(groupId);
+				table.setType(Constant.TYPE_GROUP_REMINDER_INVITE_GROUP);
+				table.setUserId(userId1);
+				// 设置读取消息的用户id
+				table.setReaderId(userId1);
+				GroupOperationTableOperate.insert(table);
+			} else if (GroupUserTableOperate.isExit(groupId, userId1)){	//已经存在群里
+				Logger.log(userId1 + "已经存在，不能插入");
+				// TODO
+				// ReturnInfoResp
+			}
+
+		} else if (req.getType() == Constant.TYPE_GROUP_OPERATION_AGREE_ADD_GROUP) { // 同意加入群
+			Logger.log("同意加入群");
+			// 同意加入群
+			boolean result = GroupUserTableOperate.insert(req.getGroupId(),
+					req.getUserId1(), 2);
+			if (result) { // 数据插入成功
+				GroupOperationTable table = new GroupOperationTable();
+				table.setDescription("成功加入群");
+				table.setGroupId(req.getGroupId());
+				table.setType(Constant.TYPE_GROUP_REMINDER_ADD_GROUP);
+				table.setUserId(req.getUserId1());
+				// 设置读取消息的用户id
+				table.setReaderId(req.getUserId1());
+				GroupOperationTableOperate.insert(table);
+			}else{	//已经存在该群里
+				//ReturnInfoResp
+			}
+		} else if (req.getType() == Constant.TYPE_GROUP_OPERATION_REFUSE_ADD_GROUP) { // 拒绝加入群
+			Logger.log("拒绝加入群");
+			
+			int userId = req.getUserId1();
+			int groupId = req.getGroupId();
+			
+			if(!GroupUserTableOperate.isExit(groupId, userId)){	//如果没有被允许加入群，那么便提示拒绝信息
+				GroupOperationTable table = new GroupOperationTable();
+				table.setDescription("你被拒绝加入群");
+				table.setGroupId(req.getGroupId());
+				table.setType(Constant.TYPE_GROUP_REMINDER_REFUSE_ADD_GROUP);
+				table.setUserId(req.getUserId1());
+				// 设置读取消息的用户id
+				table.setReaderId(req.getUserId1());
+				GroupOperationTableOperate.insert(table);
+			}
 		}
-
-		Logger.log("ReturnMessage-->返回是否加入/退出群成功操作");
-
-		chc.writeAndFlush(resp);
 	}
 
 }

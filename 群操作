@@ -1,0 +1,23 @@
+/**
+*对群的操作
+*/
+OperationGroupReq{
+	int type;	//类型，加入，退出，同意加入或者拒绝加入，详细见Constant类
+	int userId1;	//用户id
+	int userId2;	//在邀请用户加入群时有用，邀请人的id
+	int groupId;	//群id
+}
+
+/**
+*返回操作消息
+*/
+GroupReminderResp{
+	int type;	//返回消息类型
+	byte[] image;	//群头像
+	int groupId;	//群id
+	String description; 	//对操作的描述
+}
+
+1.退出
+	1.1 自己退出
+		

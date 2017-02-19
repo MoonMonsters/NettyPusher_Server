@@ -34,19 +34,16 @@ public class GroupUserTableOperate {
 	 *            身份值
 	 * @return
 	 */
-	public static synchronized ReturnInfoResp insert(int groupId,
-			int userId, int capital) {
+	public static synchronized boolean insert(int groupId, int userId,
+			int capital) {
 		Connection connection = DaoConnection.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
-		ReturnInfoResp resp = new ReturnInfoResp();
 		try {
-			if (isExit(connection, groupId, userId)) { // 加入群失败
+			if (isExit(groupId, userId)) { // 加入群失败
 				Logger.log("该用户已在群中");
-				resp.setType(Constant.TYPE_RETURN_INFO_FAIL);
-				resp.setDescription("加入群失败");
-				return resp;
+				return false;
 			}
 
 			// 插入数据
@@ -58,13 +55,9 @@ public class GroupUserTableOperate {
 			ps.setInt(3, capital);
 			System.out.println(groupId + "-->" + userId + "-->" + capital);
 			if (!ps.execute()) { // 执行成功
-				System.out.println("GroupUserTableOperation-->执行成功");
-				resp.setType(Constant.TYPE_RETURN_INFO_SUCCESS);
-				resp.setDescription("加入群成功");
+				return true;
 			} else { // 执行失败
-				System.out.println("GroupUserTableOperation-->执行失败");
-				resp.setType(Constant.TYPE_RETURN_INFO_FAIL);
-				resp.setDescription("加入群失败");
+				return false;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -72,7 +65,7 @@ public class GroupUserTableOperate {
 			OperationUtil.closeDataConnection(ps, rs);
 		}
 
-		return resp;
+		return false;
 	}
 
 	/**
@@ -88,13 +81,13 @@ public class GroupUserTableOperate {
 
 		try {
 
-			if (isExit(connection, req.getGroupid(), req.getUserid())) {
+			if (isExit(req.getGroupId(), req.getUserId1())) {
 				ps = connection.prepareStatement("delete from "
 						+ GroupUserTable.GROUPUSERTABLE + " where "
 						+ GroupUserTable.GROUPID + "=? and "
 						+ GroupUserTable.USERID + "=?");
-				ps.setInt(1, req.getGroupid());
-				ps.setInt(2, req.getUserid());
+				ps.setInt(1, req.getGroupId());
+				ps.setInt(2, req.getUserId1());
 				if (ps.execute()) {
 					resp.setType(Constant.TYPE_RETURN_INFO_SUCCESS);
 					resp.setDescription("退出群成功");
@@ -128,12 +121,18 @@ public class GroupUserTableOperate {
 	 *            用户id
 	 * @return 该数据是否存在
 	 */
-	public static boolean isExit(Connection connection, int groupid, int userid) {
+	public static boolean isExit(int groupid, int userid) {
 		boolean isExit = false;
 
+		Connection connection = DaoConnection.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
+		//在邀请用户加入群之前，先判断用户和群是否存在，如果不存在，则直接返回
+		if(!UserTableOperate.isExitUserWithUserId(userid) || !GroupTableOperate.isExitGroupWithGroupId(groupid)){
+			return isExit;
+		}
+		
 		try {
 			ps = connection.prepareStatement("select * from "
 					+ GroupUserTable.GROUPUSERTABLE + " where "
@@ -280,10 +279,10 @@ public class GroupUserTableOperate {
 			ps.setInt(1, capital);
 			ps.setInt(2, userId);
 			ps.setInt(3, groupId);
-			if(ps.executeUpdate() > 0){
+			if (ps.executeUpdate() > 0) {
 				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_USER_CAPITAL_SUCCESS);
 				resp.setDescription("更新成功");
-			}else{
+			} else {
 				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_USER_CAPITAL_FAIL);
 				resp.setDescription("更新失败，请稍后再试");
 			}
@@ -294,6 +293,81 @@ public class GroupUserTableOperate {
 		}
 
 		return resp;
+	}
+
+	/**
+	 * 退出群
+	 * 
+	 * @return 如果操作成功，则返回true，否则返回false
+	 */
+	public static boolean exitGroup(int groupId, int userId) {
+
+		boolean result = false;
+
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		/**
+		 * 如果不存在，则直接返回
+		 */
+		if (!isExit(groupId, userId)) {
+			return result;
+		}
+
+		try {
+			String sql = "delete from " + GroupUserTable.GROUPUSERTABLE
+					+ " where " + GroupUserTable.GROUPID + " = ? and "
+					+ GroupUserTable.USERID + " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, groupId);
+			ps.setInt(2, userId);
+
+			if (!ps.execute()) { // 执行删除操作
+				result = true;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return result;
+	}
+
+	/**
+	 * 根据群id和身份值，读取对应的用户id（群主或者管理员）
+	 */
+	public static List<Integer> getCapital_0_WithGroupId(int groupId) {
+		List<Integer> userIdList = new ArrayList<Integer>();
+
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			String sql = "select " + GroupUserTable.USERID + " from "
+					+ GroupUserTable.GROUPUSERTABLE + " where "
+					+ GroupUserTable.GROUPID + " = ? and ("
+					+ GroupUserTable.CAPITAL + " = ? or "
+					+ GroupUserTable.CAPITAL + " = ?)";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, groupId);
+			ps.setInt(2, Constant.TYPE_GROUP_CAPITAL_ADMIN);
+			ps.setInt(3, Constant.TYPE_GROUP_CAPITAL_OWNER);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				int userId = rs.getInt(1);
+				userIdList.add(userId);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return userIdList;
 	}
 
 }

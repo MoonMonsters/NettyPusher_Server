@@ -41,6 +41,7 @@ public class CreateGroupHandler implements Handler {
 			resp2.setHeadImage(req.getHeadImage());
 			resp2.setNumber(1);
 			resp2.setTag(req.getTag());
+			resp2.setType(Constant.TYPE_GROUP_INFO_OWNER);
 			chc.writeAndFlush(resp2);
 		} else {
 			resp.setDescription(req.getGroupname() + "创建失败，请稍后再试");

@@ -74,7 +74,16 @@ public interface Constant {
 	 * 更新用户身份失败
 	 */
 	int TYPE_RETURN_INFO_UPDATE_USER_CAPITAL_FAIL = 11;
+	/**
+	 * 搜索群时，数据个数为0
+	 */
+	int TYPE_RETURN_INFO_SEARCH_GROUP_SIZE_0 = 12;
 
+	/**
+	 * 退出群失败
+	 */
+	int TYPE_RETURN_INFO_EXIT_GROUP_FAIL = 13;
+	
 	/**
 	 * 获取用户数据
 	 */
@@ -95,6 +104,15 @@ public interface Constant {
 	 * 根据标签搜索
 	 */
 	int TYPE_GET_INFO_SEARCH_GROUP_TAG = 4;
+
+	/**
+	 * 用户拥有的群
+	 */
+	int TYPE_GROUP_INFO_OWNER = 0;
+	/**
+	 * 用户搜索时获取的群
+	 */
+	int TYPE_GROUP_INFO_SEARCH = 1;
 
 	/** 更新昵称 */
 	int TYPE_UPDATE_NICKNAME = 0;
@@ -144,4 +162,50 @@ public interface Constant {
 	 * 请求群信息
 	 */
 	int TYPE_USER_GROUP_INFO_GROUP = 1;
+
+	/*
+	 * 群操作
+	 */
+	/**
+	 * 自己退出群
+	 */
+	int TYPE_GROUP_OPERATION_EXIT_BY_MYSELF = 1;
+	/**
+	 * 被管理员踢出群
+	 */
+	int TYPE_GROUP_OPERATION_EXIT_BY_ADMIN = 2;
+	/**
+	 * 自己加入群
+	 */
+	int TYPE_GROUP_OPERATION_ADD_BY_MYSELF = 3;
+	/**
+	 * 被邀请加入群
+	 */
+	int TYPE_GROUP_OPERATION_ADD_BY_INVITE = 4;
+	/**
+	 * 同意加入群
+	 */
+	int TYPE_GROUP_OPERATION_AGREE_ADD_GROUP = 5;
+	/**
+	 * 拒绝加入群
+	 */
+	int TYPE_GROUP_OPERATION_REFUSE_ADD_GROUP = 6;
+	
+	/*
+	 * 群消息相应
+	 */
+	//1.退出群
+	int TYPE_GROUP_REMINDER_EXIT_BY_MYSELF = 0;
+	//2.踢出群
+	int TYPE_GROUP_REMINDER_REMOVE_USER = 1;
+	//3.加入群,直接就是加入了群提示信息
+	int TYPE_GROUP_REMINDER_ADD_GROUP = 2;
+	//4.邀请入群
+	int TYPE_GROUP_REMINDER_INVITE_GROUP = 3;
+	//5.拒绝用户加入群
+	int TYPE_GROUP_REMINDER_REFUSE_ADD_GROUP = 4;
+	//6.同意用户加入群
+	int TYPE_GROUP_REMINDER_AGREE_ADD_GROUP = 5;
+	//7.某用户申请加入群
+    int TYPE_GROUP_REMINDER_WANT_TO_ADD_GROUP = 6;
 }

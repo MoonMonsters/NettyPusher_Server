@@ -6,16 +6,19 @@ package edu.csuft.chentao.pojo.resp;
 import java.io.Serializable;
 import java.util.Arrays;
 
-
 /**
  * @author csuft.chentao
  *
  *         2016年12月11日 下午8:56:28
  */
-public class GroupInfoResp implements Serializable{
+public class GroupInfoResp implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
+	/**
+	 * 返回群的类型
+	 */
+	private int type;
 	/** 群id */
 	private int groupid;
 	/** 群名称 */
@@ -27,9 +30,10 @@ public class GroupInfoResp implements Serializable{
 	/** 群头像 */
 	private byte[] headImage;
 
-	public GroupInfoResp(int groupid, String groupname, String tag, int number,
-			byte[] headImage) {
+	public GroupInfoResp(int type, int groupid, String groupname, String tag,
+			int number, byte[] headImage) {
 		super();
+		this.type = type;
 		this.groupid = groupid;
 		this.groupname = groupname;
 		this.tag = tag;
@@ -39,6 +43,14 @@ public class GroupInfoResp implements Serializable{
 
 	public GroupInfoResp() {
 		super();
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
 	}
 
 	public int getGroupid() {
@@ -83,9 +95,9 @@ public class GroupInfoResp implements Serializable{
 
 	@Override
 	public String toString() {
-		return "GroupInfoResp [groupid=" + groupid + ", groupname=" + groupname
-				+ ", tag=" + tag + ", number=" + number + ", headImage="
-				+ Arrays.toString(headImage) + "]";
+		return "GroupInfoResp [type=" + type + ", groupid=" + groupid
+				+ ", groupname=" + groupname + ", tag=" + tag + ", number="
+				+ number + ", headImage=" + Arrays.toString(headImage) + "]";
 	}
 
 }

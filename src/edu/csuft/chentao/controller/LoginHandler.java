@@ -14,6 +14,7 @@ import edu.csuft.chentao.pojo.resp.GroupInfoResp;
 import edu.csuft.chentao.pojo.resp.UserInfoResp;
 import edu.csuft.chentao.util.Constant;
 import edu.csuft.chentao.util.Logger;
+import edu.csuft.chentao.util.OperationUtil;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -83,6 +84,8 @@ public class LoginHandler implements Handler {
 					public void run() {
 						// 把所有群信息发送到客户端
 						for (GroupInfoResp gir : groupInfoList) {
+							gir.setType(Constant.TYPE_GROUP_INFO_OWNER);
+							OperationUtil.sleepFor500();
 							chc.writeAndFlush(gir);
 						}
 

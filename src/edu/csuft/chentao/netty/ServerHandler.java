@@ -36,6 +36,8 @@ public class ServerHandler extends SimpleChannelInboundHandler<Object> {
 	/** 客户端断开与服务端的连接 */
 	@Override
 	public void channelInactive(ChannelHandlerContext chc) throws Exception {
+		//关闭
+		chc.close();
 		// 断开连接，从集合中移除掉
 		NettyCollections.removeWithCHC(chc);
 		Logger.log("ServerHandler-->channelInactive");

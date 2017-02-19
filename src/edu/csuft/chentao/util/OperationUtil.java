@@ -79,4 +79,26 @@ public class OperationUtil {
 		
 		return buf;
 	}
+
+	/**
+	 * –›√ﬂ0.5√Î
+	 */
+	public static void sleepFor500(){
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * –›√ﬂ5√Î
+	 */
+	public static void sleepFor5000(){
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 }
