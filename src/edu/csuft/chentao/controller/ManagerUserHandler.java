@@ -20,6 +20,7 @@ public class ManagerUserHandler implements Handler {
 	public void handle(ChannelHandlerContext chc, Object object) {
 		Logger.log("ManagerUserHandler->更新用户信息");
 		ManagerUserReq req = (ManagerUserReq) object;
+		
 		ReturnInfoResp resp = GroupUserTableOperate.updateCapital(
 				req.getUserId(), req.getGroupId(), req.getCapital());
 		chc.writeAndFlush(resp);

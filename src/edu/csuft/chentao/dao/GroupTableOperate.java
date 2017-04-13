@@ -21,6 +21,13 @@ import edu.csuft.chentao.util.OperationUtil;
  */
 public class GroupTableOperate {
 
+	/**
+	 * 插入需要创建的群信息
+	 * 
+	 * @param req
+	 *            保存群信息的对象
+	 * @return 返回群id
+	 */
 	@SuppressWarnings("resource")
 	public static synchronized int insert(CreateGroupReq req) {
 		Connection connection = DaoConnection.getConnection();
@@ -52,8 +59,11 @@ public class GroupTableOperate {
 			ps.setString(3, req.getTag());
 			ps.setInt(4, 0);
 
+			rs = null;
+			int count = ps.executeUpdate();
+
 			// 是否执行成功
-			if (!ps.execute()) {
+			if (count > 0) {
 				returnGroupId = groupid;
 				// 将身份标识和用户id存入表中
 				GroupUserTableOperate.insert(groupid, req.getCreatorId(),
@@ -142,7 +152,7 @@ public class GroupTableOperate {
 		try {
 			String sql = "select groupid,groupname,tag,number from "
 					+ GroupTable.GROUPTABLE + " where " + GroupTable.GROUPID
-					+ " = ?";
+					+ " = ? and "+GroupTable.NUMBER+" > 0";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, groupId);
 			rs = ps.executeQuery();
@@ -176,6 +186,52 @@ public class GroupTableOperate {
 	}
 
 	/**
+	 * 根据群id获得数据，在该方法中，即使人数为0，也可以取出数据 
+	 */
+	public static GroupInfoResp getGroupInfoWithId2(int groupId) {
+		GroupInfoResp resp = null;
+
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			String sql = "select groupid,groupname,tag,number from "
+					+ GroupTable.GROUPTABLE + " where " + GroupTable.GROUPID
+					+ " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, groupId);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				resp = new GroupInfoResp();
+				// 群id
+				int id = rs.getInt(1);
+				// 群名称
+				String groupName = rs.getString(2);
+				// 群标签
+				String tag = rs.getString(3);
+				// 群里人数
+				int number = rs.getInt(4);
+
+				// 从文件中把头像读取出来
+				byte[] buf = OperationUtil.getHeadImage(id);
+
+				resp.setGroupid(groupId);
+				resp.setGroupname(groupName);
+				resp.setHeadImage(buf);
+				resp.setNumber(number);
+				resp.setTag(tag);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return resp;
+	}
+	
+	/**
 	 * 根据群名获得数据集合
 	 * 
 	 * @param groupName
@@ -193,7 +249,7 @@ public class GroupTableOperate {
 		try {
 			String sql = "select groupid,groupname,tag,number from "
 					+ GroupTable.GROUPTABLE + " where " + GroupTable.GROUPNAME
-					+ " like '%" + groupName + "%' order by rand() limit 0,9";
+					+ " like '%" + groupName + "%' and "+GroupTable.NUMBER+" > 0 order by rand() limit 0,9";
 			ps = connection.prepareStatement(sql);
 			// ps.setString(1, groupName);
 			rs = ps.executeQuery();
@@ -244,7 +300,7 @@ public class GroupTableOperate {
 		try {
 			String sql = "select groupid,groupname,tag,number from "
 					+ GroupTable.GROUPTABLE + " where " + GroupTable.TAG
-					+ " like '%" + tag + "%' order by rand() limit 0,9";
+					+ " like '%" + tag + "%' and "+GroupTable.NUMBER+" > 0 order by rand() limit 0,9";
 			ps = connection.prepareStatement(sql);
 			rs = ps.executeQuery();
 			while (rs.next()) {
@@ -310,4 +366,69 @@ public class GroupTableOperate {
 
 		return result;
 	}
+
+	/**
+	 * 根据群id解散该群（删除数据）
+	 * 
+	 * @param groupId
+	 *            群id
+	 * @return 是否删除成功
+	 */
+	public static boolean removeGroupDataWithGroupId(int groupId) {
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		boolean result = false;
+
+		try {
+			String sql = "delete from " + GroupTable.GROUPTABLE + " where "
+					+ GroupTable.GROUPID + " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, groupId);
+			if (ps.executeUpdate() > 0) {
+				result = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return result;
+	}
+
+	/**
+	 * 根据群id获得群名称
+	 * 
+	 * @param groupId
+	 *            群id
+	 * @return 群名称
+	 */
+	public static String getGroupNameWithGroupId(int groupId) {
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		String groupName = null;
+
+		try {
+			String sql = "select " + GroupTable.GROUPNAME + " from "
+					+ GroupTable.GROUPTABLE + " where " + GroupTable.GROUPID
+					+ " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, groupId);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				groupName = rs.getString(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return groupName;
+	}
+
 }

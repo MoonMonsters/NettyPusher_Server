@@ -58,6 +58,8 @@ public class UserTableOperate {
 
 			// 用户的id值，从数据库中取出最大值，然后+1
 			int userid = Constant.DEFAULT_USERID;
+			ps = null;
+			rs = null;
 			ps = connection.prepareStatement("select max(userid) from "
 					+ UserTable.USERTABLE);
 			rs = ps.executeQuery();
@@ -69,6 +71,8 @@ public class UserTableOperate {
 			// 保存头像
 			OperationUtil.saveHeadImage(req.getHeadImage(), userid);
 
+			ps = null;
+			rs = null;
 			ps = connection.prepareStatement("insert into "
 					+ UserTable.USERTABLE_ALL_FIELD + " values(?,?,?,?,?)");
 			ps.setInt(1, userid);
@@ -77,8 +81,9 @@ public class UserTableOperate {
 			ps.setString(4, req.getNickname());
 			ps.setString(5, req.getSignature());
 
+			int count = ps.executeUpdate();
 			// 注册成功
-			if (!ps.execute()) {
+			if (count > 0) {
 				Logger.log("注册成功");
 				resp.setType(Constant.TYPE_REGISTER_SUCCESS);
 				resp.setDescription(req.getUsername() + "注册成功");

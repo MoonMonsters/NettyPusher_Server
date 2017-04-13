@@ -34,8 +34,8 @@ public class GroupOperationTableOperate {
 			ps.setString(4, table.getDescription());
 			ps.setInt(5, table.getReaderId());
 
-			if (!ps.execute()) { // 插入成功
-
+			if (ps.executeUpdate() > 0) { // 插入成功
+				//TODO
 			} else { // 插入失败
 
 			}

@@ -83,7 +83,39 @@ public interface Constant {
 	 * 退出群失败
 	 */
 	int TYPE_RETURN_INFO_EXIT_GROUP_FAIL = 13;
-	
+
+	/*
+	 * new
+	 */
+	/**
+	 * 管理员把用户踢出群成功
+	 */
+	int TYPE_RETURN_INFO_REMOVE_USER_SUCCESS = 14;
+	/**
+	 * 管理员把用户踢出群失败
+	 */
+	int TYPE_RETURN_INFO_REMOVE_USER_FAIL = 15;
+	/**
+	 * 申请加入群，群不存在
+	 */
+	int TYPE_RETURN_INFO_GROUP_NOT_EXIST = 16;
+	/**
+	 * 申请加入群，用户已经在群中存在
+	 */
+	int TYPE_RETURN_INFO_GROUP_MUL_USER = 17;
+	/**
+	 * 错误的用户id
+	 */
+	int TYPE_RETURN_INFO_ERROR_USERID = 18;
+	/**
+	 * 邀请用户加入群，邀请成功
+	 */
+	int TYPE_RETURN_INFO_INVITE_SUCCESS = 19;
+	/**
+	 * 邀请用户时，用户已经在群里，重复邀请
+	 */
+	int TYPE_RETURN_INFO_INVITE_REPEAT = 20;
+
 	/**
 	 * 获取用户数据
 	 */
@@ -190,22 +222,22 @@ public interface Constant {
 	 * 拒绝加入群
 	 */
 	int TYPE_GROUP_OPERATION_REFUSE_ADD_GROUP = 6;
-	
+
 	/*
 	 * 群消息相应
 	 */
-	//1.退出群
+	// 1.退出群
 	int TYPE_GROUP_REMINDER_EXIT_BY_MYSELF = 0;
-	//2.踢出群
+	// 2.踢出群
 	int TYPE_GROUP_REMINDER_REMOVE_USER = 1;
-	//3.加入群,直接就是加入了群提示信息
+	// 3.加入群,直接就是加入了群提示信息
 	int TYPE_GROUP_REMINDER_ADD_GROUP = 2;
-	//4.邀请入群
+	// 4.邀请入群
 	int TYPE_GROUP_REMINDER_INVITE_GROUP = 3;
-	//5.拒绝用户加入群
+	// 5.拒绝用户加入群
 	int TYPE_GROUP_REMINDER_REFUSE_ADD_GROUP = 4;
-	//6.同意用户加入群
+	// 6.同意用户加入群
 	int TYPE_GROUP_REMINDER_AGREE_ADD_GROUP = 5;
-	//7.某用户申请加入群
-    int TYPE_GROUP_REMINDER_WANT_TO_ADD_GROUP = 6;
+	// 7.某用户申请加入群
+	int TYPE_GROUP_REMINDER_WANT_TO_ADD_GROUP = 6;
 }

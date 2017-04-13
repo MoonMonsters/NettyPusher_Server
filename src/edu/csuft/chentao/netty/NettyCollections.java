@@ -54,6 +54,9 @@ public class NettyCollections {
 	 *            用户名
 	 */
 	public static synchronized void removeWithUserId(int userid) {
+		//关闭流
+		ChannelHandlerContext chc = sCtxMap.get(userid);
+		chc.close();
 		sCtxMap.remove(userid);
 	}
 
@@ -126,7 +129,7 @@ public class NettyCollections {
 									GroupReminderResp resp = new GroupReminderResp();
 									// 得到群数据
 									GroupInfoResp group = GroupTableOperate
-											.getGroupInfoWithId(table
+											.getGroupInfoWithId2(table
 													.getGroupId());
 
 									resp.setType(table.getType());

@@ -10,7 +10,6 @@ import edu.csuft.chentao.dao.UserTableOperate;
 import edu.csuft.chentao.netty.NettyCollections;
 import edu.csuft.chentao.pojo.req.GetInfoReq;
 import edu.csuft.chentao.pojo.resp.GroupInfoResp;
-import edu.csuft.chentao.pojo.resp.ReturnInfoResp;
 import edu.csuft.chentao.pojo.resp.UserInfoResp;
 import edu.csuft.chentao.util.Constant;
 import edu.csuft.chentao.util.Logger;
@@ -95,9 +94,7 @@ public class GetInfoHandler implements Handler {
 	}
 
 	private void sendRespForSearchGroupSize0(ChannelHandlerContext chc) {
-		ReturnInfoResp resp = new ReturnInfoResp();
-		resp.setType(Constant.TYPE_RETURN_INFO_SEARCH_GROUP_SIZE_0);
-		resp.setDescription("没有搜索到相关群数据，请查证后再尝试");
-		chc.writeAndFlush(resp);
+		
+		OperationUtil.sendReturnInfoResp(chc, Constant.TYPE_RETURN_INFO_SEARCH_GROUP_SIZE_0, "没有搜索到相关群数据，请查证后再尝试");
 	}
 }
