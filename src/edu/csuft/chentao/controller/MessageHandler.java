@@ -19,7 +19,6 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class MessageHandler implements Handler {
 
-	@Override
 	public void handle(ChannelHandlerContext chc, Object object) {
 
 		Logger.log("MessageHandler-->发送群消息操作");

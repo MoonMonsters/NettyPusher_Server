@@ -31,23 +31,21 @@ public class HeartBeatReqHandler extends  ChannelHandlerAdapter{
 			this.ctx = ctx;
 		}
 
-		@Override
 		public void run() {
 			NettyMessage message = buildHeatBeat();
-			System.out.println("client send heart message :　" + message);
+			System.out.println("client send heart message :銆�" + message);
 			ctx.writeAndFlush(message);
 		}
 		
 		private NettyMessage buildHeatBeat() {
 			NettyMessage message = new NettyMessage();
 			Header header = new Header();
-			header.setType((byte)5); //心跳请求消息
+			header.setType((byte)5); //蹇冭烦璇锋眰娑堟伅
 			message.setHeader(header);
 			return message;
 		}
 	}
 	
-	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 			throws Exception {
 		if (heartBeat != null) {

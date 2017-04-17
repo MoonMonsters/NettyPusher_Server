@@ -18,7 +18,6 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class UpdateUserInfoHandler implements Handler {
 
-	@Override
 	public void handle(ChannelHandlerContext chc, Object object) {
 
 		Logger.log("UpdateUserInfoHandler-->更新信息操作");

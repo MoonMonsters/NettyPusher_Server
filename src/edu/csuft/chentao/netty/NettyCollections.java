@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -110,20 +111,18 @@ public class NettyCollections {
 
 		new Thread(new Runnable() {
 
-			@Override
 			public void run() {
 				Iterator<Integer> it = sCtxMap.keySet().iterator();
 				try {
 					while (it.hasNext()) {
-						int userId = it.next();
+						final int userId = it.next();
 
-						GroupOperationTable table = GroupOperationTableOperate
+						final GroupOperationTable table = GroupOperationTableOperate
 								.queryByReaderId(userId);
 						if (table != null) {
 							Logger.log("table不为空，" + userId + "有数据可以读取");
 							sThreadPool.execute(new Runnable() {
 
-								@Override
 								public void run() {
 									// 此数据暂时为空
 									GroupReminderResp resp = new GroupReminderResp();
@@ -163,6 +162,10 @@ public class NettyCollections {
 				}
 			}
 		}).start();
-
 	}
+	
+	public static Set<Integer> getConnectionUerIdList(){
+		return sCtxMap.keySet();
+	}
+	
 }

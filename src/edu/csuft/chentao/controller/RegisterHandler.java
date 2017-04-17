@@ -16,7 +16,6 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class RegisterHandler implements Handler {
 
-	@Override
 	public void handle(ChannelHandlerContext chc, Object object) {
 		
 		Logger.log("RegisterHandler-->зЂВс");

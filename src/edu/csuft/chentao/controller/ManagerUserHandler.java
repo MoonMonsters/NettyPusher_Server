@@ -16,7 +16,6 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class ManagerUserHandler implements Handler {
 
-	@Override
 	public void handle(ChannelHandlerContext chc, Object object) {
 		Logger.log("ManagerUserHandler->更新用户信息");
 		ManagerUserReq req = (ManagerUserReq) object;

@@ -23,7 +23,6 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class GetInfoHandler implements Handler {
 
-	@Override
 	public void handle(ChannelHandlerContext chc, Object object) {
 		GetInfoReq req = (GetInfoReq) object;
 

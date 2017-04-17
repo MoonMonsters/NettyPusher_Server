@@ -26,7 +26,6 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class GroupOperationHandler implements Handler {
 
-	@Override
 	public void handle(ChannelHandlerContext chc, Object object) {
 
 		GroupOperationReq req = (GroupOperationReq) object;

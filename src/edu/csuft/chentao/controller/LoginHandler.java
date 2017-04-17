@@ -24,8 +24,7 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class LoginHandler implements Handler {
 
-	@Override
-	public void handle(ChannelHandlerContext chc, Object object) {
+	public void handle(final ChannelHandlerContext chc, Object object) {
 
 		Logger.log("LoginHandler-->登录操作");
 
@@ -61,7 +60,7 @@ public class LoginHandler implements Handler {
 				List<Integer> groupIdList = GroupUserTableOperate
 						.selectGroupIdsWithUserId(resp.getUserid());
 				// 该用户所在群的所有群信息
-				List<GroupInfoResp> groupInfoList = GroupTableOperate
+				final List<GroupInfoResp> groupInfoList = GroupTableOperate
 						.selectAllGroupInfosWithGroupIds(groupIdList);
 
 				/**
@@ -80,7 +79,6 @@ public class LoginHandler implements Handler {
 
 				// 在子线程中发送所有数据
 				new Thread(new Runnable() {
-					@Override
 					public void run() {
 						// 把所有群信息发送到客户端
 						for (GroupInfoResp gir : groupInfoList) {

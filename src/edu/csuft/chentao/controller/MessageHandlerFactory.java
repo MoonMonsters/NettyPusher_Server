@@ -3,6 +3,7 @@
  */
 package edu.csuft.chentao.controller;
 
+import edu.csuft.chentao.pojo.req.Announcement;
 import edu.csuft.chentao.pojo.req.CreateGroupReq;
 import edu.csuft.chentao.pojo.req.GetInfoReq;
 import edu.csuft.chentao.pojo.req.GetUserAndGroupInfoReq;
@@ -16,7 +17,7 @@ import edu.csuft.chentao.util.Logger;
 
 /**
  * @author csuft.chentao
- *
+ * 
  *         2016年12月9日 下午8:52:30
  */
 public class MessageHandlerFactory {
@@ -56,9 +57,12 @@ public class MessageHandlerFactory {
 		} else if (object instanceof ManagerUserReq) { // 修改用户身份信息
 			msg += "ManagerUserReq";
 			handler = new ManagerUserHandler();
-		} else if (object instanceof GetInfoReq) {	//客户端向服务端请求数据
+		} else if (object instanceof GetInfoReq) { // 客户端向服务端请求数据
 			msg += "GetInfoReq";
 			handler = new GetInfoHandler();
+		} else if (object instanceof Announcement) {	//处理公告数据
+			msg += "Announcement";
+			handler = new AnnouncementHandler();
 		}
 
 		Logger.log(msg);

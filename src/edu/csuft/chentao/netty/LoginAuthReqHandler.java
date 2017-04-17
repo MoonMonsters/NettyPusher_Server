@@ -15,7 +15,7 @@ public class LoginAuthReqHandler extends ChannelHandlerAdapter{
 			throws Exception {
 		NettyMessage message = (NettyMessage)msg;
 		if (message.getHeader() != null && message.getHeader().getType() == 4) {
-			byte loginResult = (byte)message.getBody();
+			byte loginResult = (Byte)message.getBody();
 			if (loginResult != (byte)0) {
 				ctx.close(); //握手失败
 			} else {

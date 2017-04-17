@@ -27,9 +27,8 @@ public class OperationUtil {
 	 * @param headImage
 	 *            Õ∑œÒ¿‡
 	 */
-	public static void saveHeadImage(byte[] headImage, int fileId) {
+	public static void saveHeadImage(final byte[] headImage, final int fileId) {
 		new Thread(new Runnable() {
-			@Override
 			public void run() {
 				try {
 					File file = new File("./headimage", String.valueOf(fileId));

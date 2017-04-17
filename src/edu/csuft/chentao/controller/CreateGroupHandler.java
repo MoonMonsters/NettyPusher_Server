@@ -18,7 +18,6 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class CreateGroupHandler implements Handler {
 
-	@Override
 	public void handle(ChannelHandlerContext chc, Object object) {
 		Logger.log("CreateGroupHandler-->创建群操作");
 		CreateGroupReq req = (CreateGroupReq) object;

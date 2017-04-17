@@ -21,7 +21,6 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class GetUserAndGroupInfoHandler implements Handler {
 
-	@Override
 	public void handle(ChannelHandlerContext chc, Object object) {
 		GetUserAndGroupInfoReq req = (GetUserAndGroupInfoReq) object;
 		if (req.getType() == Constant.TYPE_USER_GROUP_INFO_USER) { // 请求用户信息

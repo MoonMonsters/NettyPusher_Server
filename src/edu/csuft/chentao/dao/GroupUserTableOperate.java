@@ -42,10 +42,11 @@ public class GroupUserTableOperate {
 
 		try {
 
-			// 插入数据
-			ps = connection.prepareCall("insert into "
+			String sql = "insert into "
 					+ GroupUserTable.GROUPUSERTABLE_ALL_FIELD
-					+ " values(?,?,?)");
+					+ " values(?,?,?)";
+			ps = connection.prepareStatement(sql);
+			// 插入数据
 			ps.setInt(1, groupId);
 			ps.setInt(2, userId);
 			ps.setInt(3, capital);
