@@ -14,6 +14,7 @@ package edu.csuft.chentao.dao;
 public class AnnouncementTable {
 
 	public static final String TABLENAME = "announcement";
+	public static final String TABLE_ALL_FIELD = "announcement(serialnumber,title,content,username,time,userid,groupid)";
 	public static final String ID = "id";
 	public static final String SERIALNUMBER = "serialnumber";
 	public static final String TITLE = "title";

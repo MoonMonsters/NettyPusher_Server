@@ -5,6 +5,7 @@ package edu.csuft.chentao.controller;
 
 import edu.csuft.chentao.pojo.req.Announcement;
 import edu.csuft.chentao.pojo.req.CreateGroupReq;
+import edu.csuft.chentao.pojo.req.FileZip;
 import edu.csuft.chentao.pojo.req.GetInfoReq;
 import edu.csuft.chentao.pojo.req.GetUserAndGroupInfoReq;
 import edu.csuft.chentao.pojo.req.GroupOperationReq;
@@ -60,9 +61,14 @@ public class MessageHandlerFactory {
 		} else if (object instanceof GetInfoReq) { // 客户端向服务端请求数据
 			msg += "GetInfoReq";
 			handler = new GetInfoHandler();
-		} else if (object instanceof Announcement) {	//处理公告数据
+		} else if (object instanceof Announcement) { // 处理公告数据
 			msg += "Announcement";
 			handler = new AnnouncementHandler();
+		} else if (object instanceof FileZip) {
+			msg += "FileZipHandler";
+			handler = new FileZipHandler();
+		}else{
+			msg += "errorObject";
 		}
 
 		Logger.log(msg);

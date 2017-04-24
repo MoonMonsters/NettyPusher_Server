@@ -26,7 +26,7 @@ public class AnnouncementReaderOperate {
 		ResultSet rs = null;
 		
 		try{
-			String sql = "insert into * values(?,?)";
+			String sql = "insert into " + AnnouncementReader.TABLE_ALL_FIELD + " values(?,?)";
 			ps = connection.prepareStatement(sql);
 			ps.setString(1, reader.getSerialnumber());
 			ps.setInt(2, reader.getUserid());

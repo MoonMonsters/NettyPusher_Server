@@ -28,7 +28,7 @@ public class AnnouncementTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "insert into " + AnnouncementTable.TABLENAME
+			String sql = "insert into " + AnnouncementTable.TABLE_ALL_FIELD
 					+ " values(?,?,?,?,?,?,?)";
 			ps = connection.prepareStatement(sql);
 			ps.setString(1, announcement.getSerialnumber());
