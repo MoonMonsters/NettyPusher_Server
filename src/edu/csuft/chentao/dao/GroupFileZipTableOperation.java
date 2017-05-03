@@ -44,11 +44,11 @@ public class GroupFileZipTableOperation {
 			ps.setString(6, table.getTime());
 
 			if (ps.executeUpdate() > 0) { // 插入成功
-				//TODO
+				// TODO
 				System.out.println("文件上传成功，文件名->" + table.getFileName()
 						+ "序列号->" + table.getSerialNumber());
-			}else{
-				//TODO
+			} else {
+				// TODO
 			}
 
 		} catch (Exception e) {
@@ -74,7 +74,8 @@ public class GroupFileZipTableOperation {
 			// filename,serial_number,group_id,user_id,nickname,time
 			String sql = "select " + GroupFileZipTable.QUERY_ALL_FIELD
 					+ " from " + GroupFileZipTable.TABLE_NAME + " where "
-					+ GroupFileZipTable.GROUP_ID + " = ?";
+					+ GroupFileZipTable.GROUP_ID + " = ? order by "
+					+ GroupFileZipTable.TIME + " desc";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, groupId);
 			rs = ps.executeQuery();
@@ -103,6 +104,41 @@ public class GroupFileZipTableOperation {
 		}
 
 		return fileZipList;
+	}
+
+	/**
+	 * 根据serialNumber得到数据表中信息
+	 */
+	public static FileZip queryBySerialNumber(String serialNumber) {
+		FileZip fz = new FileZip();
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			String keys = String.format("%s,%s", GroupFileZipTable.FILENAME,
+					GroupFileZipTable.GROUP_ID);
+			String sql = "select " + keys + " from "
+					+ GroupFileZipTable.TABLE_NAME + " where "
+					+ GroupFileZipTable.SERIAL_NUMBER + " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setString(1, serialNumber);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				String fileName = rs.getString(1);
+				int groupId = rs.getInt(2);
+
+				fz.setFileName(fileName);
+				fz.setGroupId(groupId);
+				fz.setSerialNumber(serialNumber);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return fz;
 	}
 
 }

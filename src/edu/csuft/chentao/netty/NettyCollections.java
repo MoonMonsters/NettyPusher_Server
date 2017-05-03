@@ -55,9 +55,13 @@ public class NettyCollections {
 	 *            用户名
 	 */
 	public static synchronized void removeWithUserId(int userid) {
-		//关闭流
+		// 关闭流
 		ChannelHandlerContext chc = sCtxMap.get(userid);
-		chc.close();
+		if (chc != null) {
+			chc.close();
+			chc = null;
+		}
+		//移除
 		sCtxMap.remove(userid);
 	}
 
@@ -163,9 +167,9 @@ public class NettyCollections {
 			}
 		}).start();
 	}
-	
-	public static Set<Integer> getConnectionUerIdList(){
+
+	public static Set<Integer> getConnectionUerIdList() {
 		return sCtxMap.keySet();
 	}
-	
+
 }

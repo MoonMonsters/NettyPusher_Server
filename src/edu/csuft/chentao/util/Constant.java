@@ -115,6 +115,10 @@ public interface Constant {
 	 * 邀请用户时，用户已经在群里，重复邀请
 	 */
 	int TYPE_RETURN_INFO_INVITE_REPEAT = 20;
+	/**
+	 * 文件列表数据为0
+	 */
+	int TYPE_RETURN_INFO_FILE_LIST_SIZE_0 = 21;
 
 	/**
 	 * 获取用户数据
@@ -136,7 +140,15 @@ public interface Constant {
 	 * 根据标签搜索
 	 */
 	int TYPE_GET_INFO_SEARCH_GROUP_TAG = 4;
-
+	/**
+	 * 得到群中所有的文件列表
+	 */
+	int TYPE_GET_INFO_GROUP_FILE_LIST = 5;
+	/**
+	 * 下载文件
+	 */
+	int TYPE_GET_INFO_DOWNLOAD_FILE = 6;
+	
 	/**
 	 * 用户拥有的群
 	 */

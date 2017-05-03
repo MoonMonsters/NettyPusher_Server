@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 import edu.csuft.chentao.dao.GroupFileZipTable;
 import edu.csuft.chentao.dao.GroupFileZipTableOperation;
@@ -45,6 +46,17 @@ public class FileZipHandler implements Handler {
 			//插入数据表中
 			GroupFileZipTable table = GroupFileZipTable.copyToGroupFileZipTable(fz);
 			GroupFileZipTableOperation.insert(table);
+			
+			/*
+			 * 上传完毕后，将该文件信息发送到客户端去
+			 */
+			//文件大小
+			fz.setFileSize(String.valueOf(fz.getZip().length));
+			//不包含文件数据
+			fz.setZip(null);
+			
+			//发送
+			chc.writeAndFlush(fz);
 			
 		} catch (FileNotFoundException e) {
 			System.out.println("文件未找到");
