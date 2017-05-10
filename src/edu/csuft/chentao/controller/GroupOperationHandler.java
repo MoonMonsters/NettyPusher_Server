@@ -75,7 +75,7 @@ public class GroupOperationHandler implements Handler {
 				} else { // 退出群失败
 					ReturnInfoResp resp = new ReturnInfoResp();
 					resp.setType(Constant.TYPE_RETURN_INFO_EXIT_GROUP_FAIL);
-					resp.setDescription("退出群失败，请查证后再试");
+					resp.setObj("退出群失败，请查证后再试");
 
 					chc.writeAndFlush(resp);
 				}

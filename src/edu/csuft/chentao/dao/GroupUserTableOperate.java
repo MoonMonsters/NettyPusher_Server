@@ -88,14 +88,14 @@ public class GroupUserTableOperate {
 				rs = ps.executeQuery();
 				if (rs.next()) {
 					resp.setType(Constant.TYPE_RETURN_INFO_SUCCESS);
-					resp.setDescription("退出群成功");
+					resp.setObj("退出群成功");
 				} else {
 					resp.setType(Constant.TYPE_RETURN_INFO_FAIL);
-					resp.setDescription("退出群失败");
+					resp.setObj("退出群失败");
 				}
 			} else {
 				resp.setType(Constant.TYPE_RETURN_INFO_FAIL);
-				resp.setDescription("退出群失败");
+				resp.setObj("退出群失败");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -280,10 +280,10 @@ public class GroupUserTableOperate {
 			ps.setInt(3, groupId);
 			if (ps.executeUpdate() > 0) {
 				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_USER_CAPITAL_SUCCESS);
-				resp.setDescription("更新成功");
+				resp.setObj("更新成功");
 			} else {
 				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_USER_CAPITAL_FAIL);
-				resp.setDescription("更新失败，请稍后再试");
+				resp.setObj("更新失败，请稍后再试");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

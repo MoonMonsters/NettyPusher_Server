@@ -133,7 +133,7 @@ public class OperationUtil {
 			String description) {
 		ReturnInfoResp resp = new ReturnInfoResp();
 		resp.setType(type);
-		resp.setDescription(description);
+		resp.setObj(description);
 		chc.writeAndFlush(resp);
 		Logger.log("∑¢ÀÕReturnInfoRespœ˚œ¢----"+type);
 	}

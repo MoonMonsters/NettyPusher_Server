@@ -4,6 +4,7 @@
 package edu.csuft.chentao.controller;
 
 import edu.csuft.chentao.pojo.req.Announcement;
+import edu.csuft.chentao.pojo.req.ChangePasswordReq;
 import edu.csuft.chentao.pojo.req.CreateGroupReq;
 import edu.csuft.chentao.pojo.req.FileZip;
 import edu.csuft.chentao.pojo.req.GetInfoReq;
@@ -67,7 +68,10 @@ public class MessageHandlerFactory {
 		} else if (object instanceof FileZip) {
 			msg += "FileZipHandler";
 			handler = new FileZipHandler();
-		}else{
+		} else if (object instanceof ChangePasswordReq) {
+			msg += "ChangePasswordReq";
+			handler = new ChangePasswordHandler();
+		} else {
 			msg += "errorObject";
 		}
 

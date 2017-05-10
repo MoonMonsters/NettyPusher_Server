@@ -42,11 +42,11 @@ public class UpdateUserInfoHandler implements Handler {
 				OperationUtil
 						.saveHeadImage(req.getHeadImage(), req.getUserid());
 				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_HEAD_IMAGE_SUCCESS);
-				resp.setDescription("头像更改成功");
+				resp.setObj("头像更改成功");
 			} catch (Exception e) {
 				e.printStackTrace();
 				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_HEAD_IMAGE_FAIL);
-				resp.setDescription("头像更改失败");
+				resp.setObj("头像更改失败");
 			}
 		}
 

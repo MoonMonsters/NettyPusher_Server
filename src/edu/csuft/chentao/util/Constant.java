@@ -121,6 +121,28 @@ public interface Constant {
 	int TYPE_RETURN_INFO_FILE_LIST_SIZE_0 = 21;
 
 	/**
+	 * 删除文件成功
+	 */
+	int TYPE_RETURN_INFO_REMOVE_FILE_SUCCESS = 22;
+	/**
+	 * 删除文件失败
+	 */
+	int TYPE_RETURN_INFO_REMOVE_FILE_FAIL = 23;
+
+	/**
+	 * 修改密码成功
+	 */
+	int TYPE_RETURN_INFO_CHANGE_PASSWORD_SUCCESS = 24;
+	/**
+	 * 修改密码失败
+	 */
+	int TYPE_RETURN_INFO_CHANGE_PASSWORD_FAIL = 25;
+	/**
+	 * 发送消息成功，返回标志
+	 */
+	int TYPE_RETURN_INFO_SEND_MESSAGE_SUCCESS = 26;
+	
+	/**
 	 * 获取用户数据
 	 */
 	int TYPE_GET_INFO_USERINFO = 0;
@@ -148,7 +170,10 @@ public interface Constant {
 	 * 下载文件
 	 */
 	int TYPE_GET_INFO_DOWNLOAD_FILE = 6;
-	
+	/**
+	 * 删除文件
+	 */
+	int TYPE_GET_INFO_REMOVE_FILE = 7;
 	/**
 	 * 用户拥有的群
 	 */

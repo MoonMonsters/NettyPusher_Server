@@ -8,6 +8,7 @@ import java.util.List;
 import edu.csuft.chentao.dao.GroupUserTableOperate;
 import edu.csuft.chentao.netty.NettyCollections;
 import edu.csuft.chentao.pojo.req.Message;
+import edu.csuft.chentao.pojo.resp.ReturnInfoResp;
 import edu.csuft.chentao.util.Constant;
 import edu.csuft.chentao.util.Logger;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,16 +32,21 @@ public class MessageHandler implements Handler {
 		// 获得一个群中所有用户的id
 		List<Integer> useridList = GroupUserTableOperate
 				.selectAllUserIdsWithGroupId(message.getGroupid());
-		
+
 		// 因为是发送给其他人，所以需要移除掉自己本身的对象
 		int index = useridList.indexOf(message.getUserid());
 		if (index > -1) {
 			useridList.remove(index);
 		}
 
-//		message.setType(Constant.TYPE_MSG_RECV);
+		ReturnInfoResp resp = new ReturnInfoResp();
+		resp.setType(Constant.TYPE_RETURN_INFO_SEND_MESSAGE_SUCCESS);
+		resp.setObj(message.getSerial_number());
+
+		chc.writeAndFlush(resp);
+		// message.setType(Constant.TYPE_MSG_RECV);
 		chc.writeAndFlush(message);
-		
+
 		// 遍历所有需要发送的对象
 		NettyCollections.traverse(useridList, message);
 	}

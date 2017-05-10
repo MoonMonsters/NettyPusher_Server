@@ -39,7 +39,6 @@ public class UserTableOperate {
 		PreparedStatement ps = null;
 
 		try {
-
 			/*
 			 * 判断用户名是否存在
 			 */
@@ -127,10 +126,10 @@ public class UserTableOperate {
 			ps.setInt(2, userid);
 			if (ps.executeUpdate() >= 1) {
 				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_NICKNAME_SUCCESS);
-				resp.setDescription("更新昵称成功");
+				resp.setObj("更新昵称成功");
 			} else {
 				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_NICKNAME_FAIL);
-				resp.setDescription("更新昵称失败");
+				resp.setObj("更新昵称失败");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -165,10 +164,10 @@ public class UserTableOperate {
 			ps.setInt(2, userid);
 			if (ps.executeUpdate() >= 1) {
 				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_SIGNATURE_SUCESS);
-				resp.setDescription("更新签名成功");
+				resp.setObj("更新签名成功");
 			} else {
 				resp.setType(Constant.TYPE_RETURN_INFO_UPDATE_SIGNATURE_FAIL);
-				resp.setDescription("更新签名失败");
+				resp.setObj("更新签名失败");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -233,7 +232,7 @@ public class UserTableOperate {
 
 		try {
 			ps = connection
-					.prepareStatement("select userid,nickname,signature from "
+					.prepareStatement("select userid,nickname,signature,username from "
 							+ UserTable.USERTABLE + " where "
 							+ UserTable.USERNAME + "=? and "
 							+ UserTable.PASSWORD + "=?");
@@ -246,10 +245,12 @@ public class UserTableOperate {
 				String nickname = rs.getString(2);
 				byte[] headImage = OperationUtil.getHeadImage(userid);
 				String signature = rs.getString(3);
+				String name = rs.getString(4);
 				resp.setNickname(nickname);
 				resp.setHeadImage(headImage);
 				resp.setSignature(signature);
 				resp.setUserid(userid);
+				resp.setUsername(name);
 			} else {
 				resp.setUserid(-1);
 			}
@@ -276,7 +277,7 @@ public class UserTableOperate {
 
 		UserInfoResp resp = new UserInfoResp();
 		try {
-			String sql = "select userid,nickname,signature from "
+			String sql = "select userid,nickname,signature,username from "
 					+ UserTable.USERTABLE + " where " + UserTable.USERID
 					+ " = ?";
 			ps = connection.prepareStatement(sql);
@@ -291,6 +292,7 @@ public class UserTableOperate {
 				resp.setSignature(rs.getString(3));
 				// 头像
 				resp.setHeadImage(OperationUtil.getHeadImage(resp.getUserid()));
+				resp.setUsername(rs.getString(4));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -345,8 +347,9 @@ public class UserTableOperate {
 		boolean result = false;
 
 		try {
-			String sql = "select "+UserTable.USERNAME+" from " + UserTable.USERTABLE
-					+ " where " + UserTable.USERID + " = ?";
+			String sql = "select " + UserTable.USERNAME + " from "
+					+ UserTable.USERTABLE + " where " + UserTable.USERID
+					+ " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, userId);
 			rs = ps.executeQuery();
@@ -365,4 +368,66 @@ public class UserTableOperate {
 
 		return result;
 	}
+
+	/**
+	 * 判断用户id和密码是否匹配
+	 * 
+	 * @return 若匹配则返回true
+	 */
+	public static boolean isRightByUserIdAndPassword(int userId, String password) {
+		boolean result = false;
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			String sql = "select * from " + UserTable.USERTABLE + " where "
+					+ UserTable.USERID + " = ? and " + UserTable.PASSWORD
+					+ " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, userId);
+			ps.setString(2, password);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				result = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return result;
+	}
+
+	/**
+	 * 更新用户密码
+	 * 
+	 * @return
+	 */
+	public static boolean updateUserPassword(int userId, String newPassword) {
+		boolean result = false;
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			String sql = "update " + UserTable.USERTABLE + " set "
+					+ UserTable.PASSWORD + " = ? where " + UserTable.USERID
+					+ " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setString(1, newPassword);
+			ps.setInt(2, userId);
+			if (ps.executeUpdate() > 0) { // 更新
+				result = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return result;
+	}
+
 }

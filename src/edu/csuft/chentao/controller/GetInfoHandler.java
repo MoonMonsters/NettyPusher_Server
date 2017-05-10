@@ -10,6 +10,7 @@ import java.util.List;
 
 import edu.csuft.chentao.dao.GroupFileZipTableOperation;
 import edu.csuft.chentao.dao.GroupTableOperate;
+import edu.csuft.chentao.dao.GroupUserTableOperate;
 import edu.csuft.chentao.dao.UserTableOperate;
 import edu.csuft.chentao.netty.NettyCollections;
 import edu.csuft.chentao.pojo.req.FileZip;
@@ -56,6 +57,9 @@ public class GetInfoHandler implements Handler {
 		case Constant.TYPE_GET_INFO_DOWNLOAD_FILE: // 下载文件
 			downloadFile(chc, req);
 			break;
+		case Constant.TYPE_GET_INFO_REMOVE_FILE: // 删除文件
+			removeGroupFile(chc, req);
+			break;
 		}
 	}
 
@@ -66,8 +70,9 @@ public class GetInfoHandler implements Handler {
 		List<FileZip> fileZipList = GroupFileZipTableOperation.queryAll(req
 				.getArg1());
 		if (fileZipList.size() == 0) {
-			ReturnInfoResp resp = new ReturnInfoResp(
-					Constant.TYPE_RETURN_INFO_FILE_LIST_SIZE_0, "该群中暂没有任何文件");
+			ReturnInfoResp resp = new ReturnInfoResp();
+			resp.setType(Constant.TYPE_RETURN_INFO_FILE_LIST_SIZE_0);
+			resp.setObj("该群中暂没有任何文件");
 			chc.writeAndFlush(resp);
 		} else {
 			for (FileZip fz : fileZipList) { // 将所有数据发送到客户端
@@ -185,7 +190,7 @@ public class GetInfoHandler implements Handler {
 			// 读取文件内容
 			fis.read(content);
 
-			//从数据表中获得数据
+			// 从数据表中获得数据
 			FileZip fz = GroupFileZipTableOperation
 					.queryBySerialNumber(serialNumber);
 			fz.setZip(content);
@@ -205,4 +210,48 @@ public class GetInfoHandler implements Handler {
 			}
 		}
 	}
+
+	/**
+	 * 删除群文件
+	 */
+	private void removeGroupFile(ChannelHandlerContext chc, GetInfoReq req) {
+
+		// 文件序列号
+		String serialNumber = (String) req.getObj();
+		// 群id
+		int groupId = req.getArg1();
+		// 用户id
+		int userId = req.getArg2();
+
+		int capital = GroupUserTableOperate.getCapitalWithUserIdAndGroupId(
+				groupId, userId);
+		int owerId = GroupFileZipTableOperation.getFileOwnerBySerialNumber(serialNumber, groupId);
+		
+		ReturnInfoResp resp = new ReturnInfoResp();
+		
+		//如果要删除该文件的用户是，管理员，群主或者文件的上传者，那么则允许执行删除操作
+		if (capital == Constant.TYPE_GROUP_CAPITAL_ADMIN
+				|| capital == Constant.TYPE_GROUP_CAPITAL_OWNER
+				|| owerId == userId) {
+			//删除表中数据
+			boolean result1 = GroupFileZipTableOperation.deleteBySerialNumber(serialNumber, groupId);
+			boolean result2 = false;
+			File file = new File(serialNumber);
+			//删除文件
+			if(file.exists()){
+				result2 = file.delete();
+			}
+			if(result1 && result2){
+				resp.setType(Constant.TYPE_RETURN_INFO_REMOVE_FILE_SUCCESS);
+				resp.setObj(serialNumber);
+			}
+		}else{
+			resp.setType(Constant.TYPE_RETURN_INFO_REMOVE_FILE_FAIL);
+			resp.setObj("删除失败，请稍后再试");
+		}
+		
+		//发送执行结果到客户端
+		chc.writeAndFlush(resp);
+	}
+
 }

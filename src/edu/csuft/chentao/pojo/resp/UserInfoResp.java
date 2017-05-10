@@ -23,20 +23,22 @@ public class UserInfoResp implements Serializable {
 	private byte[] headImage;
 	/** 签名 */
 	private String signature;
-
+	/**
+	 * 用户名
+	 */
+	private String username;
 	public UserInfoResp(int type, int userid, String nickname,
-			byte[] headImage, String signature) {
+			byte[] headImage, String signature, String username) {
 		super();
 		this.type = type;
 		this.userid = userid;
 		this.nickname = nickname;
 		this.headImage = headImage;
 		this.signature = signature;
+		this.username = username;
 	}
-
-	public UserInfoResp() {
-		super();
-	}
+	
+	public UserInfoResp(){}
 
 	public int getType() {
 		return type;
@@ -78,10 +80,19 @@ public class UserInfoResp implements Serializable {
 		this.signature = signature;
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	@Override
 	public String toString() {
 		return "UserInfoResp [type=" + type + ", userid=" + userid
 				+ ", nickname=" + nickname + ", headImage="
-				+ Arrays.toString(headImage) + ", signature=" + signature + "]";
+				+ Arrays.toString(headImage) + ", signature=" + signature
+				+ ", username=" + username + "]";
 	}
 }

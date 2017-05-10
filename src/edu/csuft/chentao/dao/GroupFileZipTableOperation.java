@@ -141,4 +141,70 @@ public class GroupFileZipTableOperation {
 		return fz;
 	}
 
+	/**
+	 * 根据SerialNumber删除数据
+	 */
+	public static boolean deleteBySerialNumber(String serialNumber, int groupId) {
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			String sql = "delete from " + GroupFileZipTable.TABLE_NAME
+					+ " where " + GroupFileZipTable.GROUP_ID + " = ? and "
+					+ GroupFileZipTable.SERIAL_NUMBER + " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, groupId);
+			ps.setString(2, serialNumber);
+			//执行删除操作
+			if (ps.executeUpdate() > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return false;
+	}
+
+	/**
+	 * 根据群id和序列号，得到该文件的上传者id
+	 * 
+	 * @param serialNumber
+	 *            文件的序列号
+	 * @param groupId
+	 *            群id
+	 * @return 用户id，文件的上传者
+	 */
+	public static int getFileOwnerBySerialNumber(String serialNumber,
+			int groupId) {
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		int userId = -1;
+
+		try {
+			String sql = "select " + GroupFileZipTable.USER_ID + " from "
+					+ GroupFileZipTable.TABLE_NAME + " where "
+					+ GroupFileZipTable.GROUP_ID + " = ? and "
+					+ GroupFileZipTable.SERIAL_NUMBER + " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, groupId);
+			ps.setString(2, serialNumber);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				userId = rs.getInt(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return userId;
+	}
+
 }
