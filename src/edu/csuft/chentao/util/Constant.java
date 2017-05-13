@@ -141,7 +141,10 @@ public interface Constant {
 	 * 发送消息成功，返回标志
 	 */
 	int TYPE_RETURN_INFO_SEND_MESSAGE_SUCCESS = 26;
-	
+	/**
+	 * 让客户端掉线
+	 */
+	int TYPE_RETURN_INFO_CLIENT_EXIT = 27;
 	/**
 	 * 获取用户数据
 	 */

@@ -43,7 +43,8 @@ public class UserTableOperate {
 			 * 判断用户名是否存在
 			 */
 			ps = connection.prepareStatement("select " + UserTable.USERNAME
-					+ " from " + UserTable.USERTABLE + " where username = ?");
+					+ " from " + UserTable.TABLE_NAME + " where "
+					+ UserTable.USERNAME + " = ?");
 			ps.setString(1, req.getUsername());
 			rs = ps.executeQuery();
 			if (rs.next()) {
@@ -59,8 +60,8 @@ public class UserTableOperate {
 			int userid = Constant.DEFAULT_USERID;
 			ps = null;
 			rs = null;
-			ps = connection.prepareStatement("select max(userid) from "
-					+ UserTable.USERTABLE);
+			ps = connection.prepareStatement("select max(" + UserTable.USER_ID
+					+ ") from " + UserTable.TABLE_NAME);
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				int id = rs.getInt(1);
@@ -73,7 +74,7 @@ public class UserTableOperate {
 			ps = null;
 			rs = null;
 			ps = connection.prepareStatement("insert into "
-					+ UserTable.USERTABLE_ALL_FIELD + " values(?,?,?,?,?)");
+					+ UserTable.TABLE_ALL_FIELD + " values(?,?,?,?,?)");
 			ps.setInt(1, userid);
 			ps.setString(2, req.getUsername());
 			ps.setString(3, req.getPassword());
@@ -118,9 +119,9 @@ public class UserTableOperate {
 		ReturnInfoResp resp = new ReturnInfoResp();
 
 		try {
-			String sql = "update " + UserTable.USERTABLE + " set "
+			String sql = "update " + UserTable.TABLE_NAME + " set "
 					+ UserTable.NICKNAME + " = ?" + " where "
-					+ UserTable.USERID + " = ?";
+					+ UserTable.USER_ID + " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setString(1, nickname);
 			ps.setInt(2, userid);
@@ -157,9 +158,9 @@ public class UserTableOperate {
 		ReturnInfoResp resp = new ReturnInfoResp();
 
 		try {
-			ps = connection.prepareStatement("update " + UserTable.USERTABLE
+			ps = connection.prepareStatement("update " + UserTable.TABLE_NAME
 					+ " set " + UserTable.SIGNATURE + "= ?" + " where "
-					+ UserTable.USERID + "=?");
+					+ UserTable.USER_ID + "=?");
 			ps.setString(1, signature);
 			ps.setInt(2, userid);
 			if (ps.executeUpdate() >= 1) {
@@ -195,8 +196,8 @@ public class UserTableOperate {
 		int userid = -1;
 
 		try {
-			ps = connection.prepareStatement("select " + UserTable.USERID
-					+ " from " + UserTable.USERTABLE + " where "
+			ps = connection.prepareStatement("select " + UserTable.USER_ID
+					+ " from " + UserTable.TABLE_NAME + " where "
 					+ UserTable.USERNAME + "=? and " + UserTable.PASSWORD
 					+ "=?");
 			ps.setString(1, username);
@@ -231,11 +232,11 @@ public class UserTableOperate {
 		UserInfoResp resp = new UserInfoResp();
 
 		try {
-			ps = connection
-					.prepareStatement("select userid,nickname,signature,username from "
-							+ UserTable.USERTABLE + " where "
-							+ UserTable.USERNAME + "=? and "
-							+ UserTable.PASSWORD + "=?");
+			ps = connection.prepareStatement("select " + UserTable.USER_ID
+					+ "," + UserTable.NICKNAME + "," + UserTable.SIGNATURE
+					+ "," + UserTable.USERNAME + " from "
+					+ UserTable.TABLE_NAME + " where " + UserTable.USERNAME
+					+ "=? and " + UserTable.PASSWORD + "=?");
 			ps.setString(1, username);
 			ps.setString(2, password);
 
@@ -277,9 +278,10 @@ public class UserTableOperate {
 
 		UserInfoResp resp = new UserInfoResp();
 		try {
-			String sql = "select userid,nickname,signature,username from "
-					+ UserTable.USERTABLE + " where " + UserTable.USERID
-					+ " = ?";
+			String sql = "select " + UserTable.USER_ID + ","
+					+ UserTable.NICKNAME + "," + UserTable.SIGNATURE + ","
+					+ UserTable.USERNAME + " from " + UserTable.TABLE_NAME
+					+ " where " + UserTable.USER_ID + " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, userId);
 			rs = ps.executeQuery();
@@ -315,7 +317,7 @@ public class UserTableOperate {
 
 		try {
 			String sql = "select " + UserTable.USERNAME + " from "
-					+ UserTable.USERTABLE + " where " + UserTable.USERID
+					+ UserTable.TABLE_NAME + " where " + UserTable.USER_ID
 					+ " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, userId);
@@ -348,7 +350,7 @@ public class UserTableOperate {
 
 		try {
 			String sql = "select " + UserTable.USERNAME + " from "
-					+ UserTable.USERTABLE + " where " + UserTable.USERID
+					+ UserTable.TABLE_NAME + " where " + UserTable.USER_ID
 					+ " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, userId);
@@ -381,8 +383,8 @@ public class UserTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "select * from " + UserTable.USERTABLE + " where "
-					+ UserTable.USERID + " = ? and " + UserTable.PASSWORD
+			String sql = "select * from " + UserTable.TABLE_NAME + " where "
+					+ UserTable.USER_ID + " = ? and " + UserTable.PASSWORD
 					+ " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, userId);
@@ -412,8 +414,8 @@ public class UserTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "update " + UserTable.USERTABLE + " set "
-					+ UserTable.PASSWORD + " = ? where " + UserTable.USERID
+			String sql = "update " + UserTable.TABLE_NAME + " set "
+					+ UserTable.PASSWORD + " = ? where " + UserTable.USER_ID
 					+ " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setString(1, newPassword);

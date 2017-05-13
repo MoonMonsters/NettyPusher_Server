@@ -19,7 +19,9 @@ public class AnnouncementTableOperate {
 
 	/**
 	 * 插入数据
-	 * @param announcement 公告数据对象
+	 * 
+	 * @param announcement
+	 *            公告数据对象
 	 * @return 是否插入成功
 	 */
 	public static boolean insert(Announcement announcement) {
@@ -48,7 +50,7 @@ public class AnnouncementTableOperate {
 		} finally {
 			OperationUtil.closeDataConnection(ps, rs);
 		}
-		
+
 		return false;
 	}
 

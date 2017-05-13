@@ -42,8 +42,7 @@ public class GroupUserTableOperate {
 
 		try {
 
-			String sql = "insert into "
-					+ GroupUserTable.GROUPUSERTABLE_ALL_FIELD
+			String sql = "insert into " + GroupUserTable.TABLE_ALL_FIELD
 					+ " values(?,?,?)";
 			ps = connection.prepareStatement(sql);
 			// 插入数据
@@ -80,9 +79,9 @@ public class GroupUserTableOperate {
 
 			if (isExit(req.getGroupId(), req.getUserId1())) { // 如果群id和用户id存在
 				ps = connection.prepareStatement("delete from "
-						+ GroupUserTable.GROUPUSERTABLE + " where "
-						+ GroupUserTable.GROUPID + "=? and "
-						+ GroupUserTable.USERID + "=?");
+						+ GroupUserTable.TABLE_NAME + " where "
+						+ GroupUserTable.GROUP_ID + "=? and "
+						+ GroupUserTable.USER_ID + "=?");
 				ps.setInt(1, req.getGroupId());
 				ps.setInt(2, req.getUserId1());
 				rs = ps.executeQuery();
@@ -133,14 +132,14 @@ public class GroupUserTableOperate {
 
 		try {
 			ps = connection.prepareStatement("select * from "
-					+ GroupUserTable.GROUPUSERTABLE + " where "
-					+ GroupUserTable.GROUPID + "= ? and "
-					+ GroupUserTable.USERID + "= ?");
+					+ GroupUserTable.TABLE_NAME + " where "
+					+ GroupUserTable.GROUP_ID + "= ? and "
+					+ GroupUserTable.USER_ID + "= ?");
 			ps.setInt(1, groupid);
 			ps.setInt(2, userid);
 			rs = ps.executeQuery();
 			if (rs.next()) { // 在群里已经存在
-				Logger.log("isExit-->"+userid+"已经存在");
+				Logger.log("isExit-->" + userid + "已经存在");
 				isExit = true;
 			}
 		} catch (Exception e) {
@@ -168,9 +167,9 @@ public class GroupUserTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "select userid,capital from "
-					+ GroupUserTable.GROUPUSERTABLE + " where "
-					+ GroupUserTable.GROUPID + "=?";
+			String sql = "select "+GroupUserTable.USER_ID+","+GroupUserTable.CAPITAL+" from "
+					+ GroupUserTable.TABLE_NAME + " where "
+					+ GroupUserTable.GROUP_ID + "=?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, groupid);
 			rs = ps.executeQuery();
@@ -201,8 +200,9 @@ public class GroupUserTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "select userid from " + GroupUserTable.GROUPUSERTABLE
-					+ " where " + GroupUserTable.GROUPID + "=?";
+			String sql = "select " + GroupUserTable.USER_ID + " from "
+					+ GroupUserTable.TABLE_NAME + " where "
+					+ GroupUserTable.GROUP_ID + "=?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, groupId);
 			rs = ps.executeQuery();
@@ -232,9 +232,9 @@ public class GroupUserTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "select " + GroupUserTable.GROUPID + " from "
-					+ GroupUserTable.GROUPUSERTABLE + " where "
-					+ GroupUserTable.USERID + " = ? ";
+			String sql = "select " + GroupUserTable.GROUP_ID + " from "
+					+ GroupUserTable.TABLE_NAME + " where "
+					+ GroupUserTable.USER_ID + " = ? ";
 			ps = connection.prepareStatement(sql);
 			// 设置用户id
 			ps.setInt(1, userId);
@@ -270,10 +270,10 @@ public class GroupUserTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "update " + GroupUserTable.GROUPUSERTABLE + " set "
+			String sql = "update " + GroupUserTable.TABLE_NAME + " set "
 					+ GroupUserTable.CAPITAL + "=? where "
-					+ GroupUserTable.USERID + "=? and "
-					+ GroupUserTable.GROUPID + "=?";
+					+ GroupUserTable.USER_ID + "=? and "
+					+ GroupUserTable.GROUP_ID + "=?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, capital);
 			ps.setInt(2, userId);
@@ -314,18 +314,22 @@ public class GroupUserTableOperate {
 			return result;
 		}
 
+		System.out.println("GroupUserTableOperate.exitGroup退出群");
+		
 		try {
-			String sql = "delete from " + GroupUserTable.GROUPUSERTABLE
-					+ " where " + GroupUserTable.GROUPID + " = ? and "
-					+ GroupUserTable.USERID + " = ?";
+			String sql = "delete from " + GroupUserTable.TABLE_NAME + " where "
+					+ GroupUserTable.GROUP_ID + " = ? and "
+					+ GroupUserTable.USER_ID + " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, groupId);
 			ps.setInt(2, userId);
+			System.out.println("GroupUserTableOperate.exitGroup---"+ps.toString());
 			if (ps.executeUpdate() > 0) { // 执行删除操作
 				result = true;
 			}
 
 		} catch (Exception e) {
+			System.out.println("GroupUserTableOperate.exitGroup---执行错误");
 			e.printStackTrace();
 		} finally {
 			OperationUtil.closeDataConnection(ps, rs);
@@ -345,9 +349,9 @@ public class GroupUserTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "select " + GroupUserTable.USERID + " from "
-					+ GroupUserTable.GROUPUSERTABLE + " where "
-					+ GroupUserTable.GROUPID + " = ? and ("
+			String sql = "select " + GroupUserTable.USER_ID + " from "
+					+ GroupUserTable.TABLE_NAME + " where "
+					+ GroupUserTable.GROUP_ID + " = ? and ("
 					+ GroupUserTable.CAPITAL + " = ? or "
 					+ GroupUserTable.CAPITAL + " = ?)";
 			ps = connection.prepareStatement(sql);
@@ -384,9 +388,9 @@ public class GroupUserTableOperate {
 
 		try {
 			String sql = "select " + GroupUserTable.CAPITAL + " from "
-					+ GroupUserTable.GROUPUSERTABLE + " where "
-					+ GroupUserTable.USERID + " = ? and "
-					+ GroupUserTable.GROUPID + " = ?";
+					+ GroupUserTable.TABLE_NAME + " where "
+					+ GroupUserTable.USER_ID + " = ? and "
+					+ GroupUserTable.GROUP_ID + " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, userId);
 			ps.setInt(2, groupId);
@@ -418,8 +422,8 @@ public class GroupUserTableOperate {
 		boolean result = false;
 
 		try {
-			String sql = "delete from " + GroupUserTable.GROUPUSERTABLE
-					+ " where " + GroupUserTable.GROUPID + " = ?";
+			String sql = "delete from " + GroupUserTable.TABLE_NAME + " where "
+					+ GroupUserTable.GROUP_ID + " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, groupId);
 			if (ps.executeUpdate() > 0) {
@@ -449,9 +453,9 @@ public class GroupUserTableOperate {
 		List<Integer> userIdList = new ArrayList<Integer>();
 
 		try {
-			String sql = "select " + GroupUserTable.USERID + " from "
-					+ GroupUserTable.GROUPUSERTABLE + " where "
-					+ GroupUserTable.GROUPID + " = ?";
+			String sql = "select " + GroupUserTable.USER_ID + " from "
+					+ GroupUserTable.TABLE_NAME + " where "
+					+ GroupUserTable.GROUP_ID + " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, groupId);
 			rs = ps.executeQuery();

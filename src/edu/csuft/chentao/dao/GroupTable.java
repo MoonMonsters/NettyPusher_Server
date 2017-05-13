@@ -11,11 +11,11 @@ package edu.csuft.chentao.dao;
 public class GroupTable {
 
 	/** group表名 */
-	public static final String GROUPTABLE = "chatgroup";
-	public static final String GROUPTABLE_ALL_FIELD = "chatgroup(groupid,groupname,tag,number)";
+	public static final String TABLE_NAME = "chat_group";
+	public static final String TABLE_ALL_FIELD = "chat_group(group_id,group_name,tag,number)";
 	public static final String ID = "id";
-	public static final String GROUPID = "groupid";
-	public static final String GROUPNAME = "groupname";
+	public static final String GROUP_ID = "group_id";
+	public static final String GROUP_NAME = "group_name";
 	public static final String TAG = "tag";
 	/** 人数 */
 	public static final String NUMBER = "number";

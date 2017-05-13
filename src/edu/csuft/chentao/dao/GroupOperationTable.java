@@ -18,12 +18,12 @@ public class GroupOperationTable {
 	/**
 	 * 插入用到
 	 */
-	public static String ALLFIELD = " groupoperation(type,userId,groupId,description,readerId) ";
+	public static String TABLE_ALL_FIELD = " group_operation(type,user_id,group_id,description,reader_id) ";
 	public static String VALUES = " values(?,?,?,?,?) ";
 	/**
 	 * 表名称
 	 */
-	public static String GROUPOPERATIONTABLE = "groupoperation";
+	public static String TABLE_NAME = "group_operation";
 	/**
 	 * id
 	 */
@@ -35,11 +35,11 @@ public class GroupOperationTable {
 	/**
 	 * 用户id
 	 */
-	public static String USERID = "userId";
+	public static String USER_ID = "user_id";
 	/**
 	 * 群id
 	 */
-	public static String GROUPID = "groupId";
+	public static String GROUP_ID = "group_id";
 	/**
 	 * 描述
 	 */
@@ -47,7 +47,7 @@ public class GroupOperationTable {
 	/**
 	 * 读取此消息的用户id
 	 */
-	public static String READERID = "readerId";
+	public static String READER_ID = "reader_id";
 
 	public GroupOperationTable(int type, int userId, int groupId,
 			String description, int readerId) {

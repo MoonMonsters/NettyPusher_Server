@@ -25,7 +25,7 @@ public class GroupOperationTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "insert into" + GroupOperationTable.ALLFIELD
+			String sql = "insert into" + GroupOperationTable.TABLE_ALL_FIELD
 					+ GroupOperationTable.VALUES;
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, table.getType());
@@ -64,11 +64,11 @@ public class GroupOperationTableOperate {
 		try {
 			String sql = "select " + GroupOperationTable.ID + ","
 					+ GroupOperationTable.TYPE + ","
-					+ GroupOperationTable.USERID + ","
-					+ GroupOperationTable.GROUPID + ","
+					+ GroupOperationTable.USER_ID + ","
+					+ GroupOperationTable.GROUP_ID + ","
 					+ GroupOperationTable.DESCRIPTION + " from "
-					+ GroupOperationTable.GROUPOPERATIONTABLE + " where "
-					+ GroupOperationTable.READERID + " = ? limit 0,1";
+					+ GroupOperationTable.TABLE_NAME + " where "
+					+ GroupOperationTable.READER_ID + " = ? limit 0,1";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, readerId);
 			rs = ps.executeQuery();
@@ -107,7 +107,7 @@ public class GroupOperationTableOperate {
 
 		try {
 			String sql = "delete from "
-					+ GroupOperationTable.GROUPOPERATIONTABLE + " where "
+					+ GroupOperationTable.TABLE_NAME + " where "
 					+ GroupOperationTable.ID + " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, id);

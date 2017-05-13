@@ -9,10 +9,10 @@ package edu.csuft.chentao.dao;
 public class UserTable {
 
 	/** user±íÃû */
-	public static final String USERTABLE = "user";
-	public static final String USERTABLE_ALL_FIELD = "user(userid,username,password,nickname,signature)";
+	public static final String TABLE_NAME = "user";
+	public static final String TABLE_ALL_FIELD = "user(user_id,username,password,nickname,signature)";
 	public static final String ID = "id";
-	public static final String USERID = "userid";
+	public static final String USER_ID = "user_id";
 	public static final String USERNAME = "username";
 	public static final String PASSWORD = "password";
 	public static final String NICKNAME = "nickname";

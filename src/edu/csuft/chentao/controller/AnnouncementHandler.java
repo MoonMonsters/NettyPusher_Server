@@ -30,7 +30,7 @@ public class AnnouncementHandler implements Handler{
 		int groupId = announcement.getGroupid();
 		List<Integer> userIdList = GroupUserTableOperate.getAllUserIdWithGroupId(groupId);
 		//3.根据用户id，将Announcement对象转发给在线用户
-		NettyCollections.traverse(userIdList, announcement);
+		NettyCollections.traverse(groupId, announcement);
 		//4.如果用户不在线，则将所有数据存储到数据库中
 		Set<Integer> userIdSet = NettyCollections.getConnectionUerIdList();
 		userIdSet.add(announcement.getUserid());

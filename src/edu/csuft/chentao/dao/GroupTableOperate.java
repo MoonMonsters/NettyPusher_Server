@@ -37,8 +37,8 @@ public class GroupTableOperate {
 
 		try {
 			// 得到当前最大的群id
-			ps = connection.prepareStatement("select max(groupid) from "
-					+ GroupTable.GROUPTABLE);
+			ps = connection.prepareStatement("select max("
+					+ GroupTable.GROUP_ID + ") from " + GroupTable.TABLE_NAME);
 			rs = ps.executeQuery();
 			// 设置群id
 			int groupid = Constant.DEFAULT_GROUPID;
@@ -53,7 +53,7 @@ public class GroupTableOperate {
 
 			// 设置群属性
 			ps = connection.prepareStatement("insert into "
-					+ GroupTable.GROUPTABLE_ALL_FIELD + "values(?,?,?,?)");
+					+ GroupTable.TABLE_ALL_FIELD + "values(?,?,?,?)");
 			ps.setInt(1, groupid);
 			ps.setString(2, req.getGroupname());
 			ps.setString(3, req.getTag());
@@ -96,9 +96,10 @@ public class GroupTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "select groupid,groupname,tag,number from "
-					+ GroupTable.GROUPTABLE + " where " + GroupTable.GROUPID
-					+ " = ?";
+			String sql = "select " + GroupTable.GROUP_ID + ","
+					+ GroupTable.GROUP_NAME + "," + GroupTable.TAG + ","
+					+ GroupTable.NUMBER + " from " + GroupTable.TABLE_NAME
+					+ " where " + GroupTable.GROUP_ID + " = ?";
 			ps = connection.prepareStatement(sql);
 			for (int id : groupIdList) {
 				ps.setInt(1, id);
@@ -150,9 +151,11 @@ public class GroupTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "select groupid,groupname,tag,number from "
-					+ GroupTable.GROUPTABLE + " where " + GroupTable.GROUPID
-					+ " = ? and "+GroupTable.NUMBER+" > 0";
+			String sql = "select " + GroupTable.GROUP_ID + ","
+					+ GroupTable.GROUP_NAME + "," + GroupTable.TAG + ","
+					+ GroupTable.NUMBER + " from " + GroupTable.TABLE_NAME
+					+ " where " + GroupTable.GROUP_ID + " = ? and "
+					+ GroupTable.NUMBER + " > 0";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, groupId);
 			rs = ps.executeQuery();
@@ -186,7 +189,7 @@ public class GroupTableOperate {
 	}
 
 	/**
-	 * 根据群id获得数据，在该方法中，即使人数为0，也可以取出数据 
+	 * 根据群id获得数据，在该方法中，即使人数为0，也可以取出数据
 	 */
 	public static GroupInfoResp getGroupInfoWithId2(int groupId) {
 		GroupInfoResp resp = null;
@@ -196,9 +199,10 @@ public class GroupTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "select groupid,groupname,tag,number from "
-					+ GroupTable.GROUPTABLE + " where " + GroupTable.GROUPID
-					+ " = ?";
+			String sql = "select " + GroupTable.GROUP_ID + ","
+					+ GroupTable.GROUP_NAME + "," + GroupTable.TAG + ","
+					+ GroupTable.NUMBER + " from " + GroupTable.TABLE_NAME
+					+ " where " + GroupTable.GROUP_ID + " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, groupId);
 			rs = ps.executeQuery();
@@ -230,7 +234,7 @@ public class GroupTableOperate {
 
 		return resp;
 	}
-	
+
 	/**
 	 * 根据群名获得数据集合
 	 * 
@@ -247,9 +251,12 @@ public class GroupTableOperate {
 		List<GroupInfoResp> list = new ArrayList<GroupInfoResp>();
 
 		try {
-			String sql = "select groupid,groupname,tag,number from "
-					+ GroupTable.GROUPTABLE + " where " + GroupTable.GROUPNAME
-					+ " like '%" + groupName + "%' and "+GroupTable.NUMBER+" > 0 order by rand() limit 0,9";
+			String sql = "select " + GroupTable.GROUP_ID + ","
+					+ GroupTable.GROUP_NAME + "," + GroupTable.TAG + ","
+					+ GroupTable.NUMBER + " from " + GroupTable.TABLE_NAME
+					+ " where " + GroupTable.GROUP_NAME + " like '%"
+					+ groupName + "%' and " + GroupTable.NUMBER
+					+ " > 0 order by rand() limit 0,9";
 			ps = connection.prepareStatement(sql);
 			// ps.setString(1, groupName);
 			rs = ps.executeQuery();
@@ -298,9 +305,11 @@ public class GroupTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "select groupid,groupname,tag,number from "
-					+ GroupTable.GROUPTABLE + " where " + GroupTable.TAG
-					+ " like '%" + tag + "%' and "+GroupTable.NUMBER+" > 0 order by rand() limit 0,9";
+			String sql = "select " + GroupTable.GROUP_ID + ","
+					+ GroupTable.GROUP_NAME + "," + GroupTable.TAG + ","
+					+ GroupTable.NUMBER + " from " + GroupTable.TABLE_NAME
+					+ " where " + GroupTable.TAG + " like '%" + tag + "%' and "
+					+ GroupTable.NUMBER + " > 0 order by rand() limit 0,9";
 			ps = connection.prepareStatement(sql);
 			rs = ps.executeQuery();
 			while (rs.next()) {
@@ -346,8 +355,8 @@ public class GroupTableOperate {
 		ResultSet rs = null;
 
 		try {
-			String sql = "select " + GroupTable.GROUPNAME + " from "
-					+ GroupTable.GROUPTABLE + " where " + GroupTable.GROUPID
+			String sql = "select " + GroupTable.GROUP_NAME + " from "
+					+ GroupTable.TABLE_NAME + " where " + GroupTable.GROUP_ID
 					+ " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, groupId);
@@ -382,8 +391,8 @@ public class GroupTableOperate {
 		boolean result = false;
 
 		try {
-			String sql = "delete from " + GroupTable.GROUPTABLE + " where "
-					+ GroupTable.GROUPID + " = ?";
+			String sql = "delete from " + GroupTable.TABLE_NAME + " where "
+					+ GroupTable.GROUP_ID + " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, groupId);
 			if (ps.executeUpdate() > 0) {
@@ -413,8 +422,8 @@ public class GroupTableOperate {
 		String groupName = null;
 
 		try {
-			String sql = "select " + GroupTable.GROUPNAME + " from "
-					+ GroupTable.GROUPTABLE + " where " + GroupTable.GROUPID
+			String sql = "select " + GroupTable.GROUP_NAME + " from "
+					+ GroupTable.TABLE_NAME + " where " + GroupTable.GROUP_ID
 					+ " = ?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, groupId);
@@ -429,6 +438,40 @@ public class GroupTableOperate {
 		}
 
 		return groupName;
+	}
+
+	/**
+	 * 根据群id得到群人数
+	 * 
+	 * @param groupId
+	 *            群id
+	 * @return 群中用户人数
+	 */
+	public static int getGroupUserNumberByGroupId(int groupId) {
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		int number = -1;
+
+		try {
+			String sql = "select " + GroupTable.NUMBER + " from "
+					+ GroupTable.TABLE_NAME + " where " + GroupTable.GROUP_ID
+					+ " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, groupId);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				// 得到数据
+				number = rs.getInt(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return number;
 	}
 
 }

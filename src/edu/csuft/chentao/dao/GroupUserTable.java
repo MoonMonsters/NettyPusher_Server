@@ -10,11 +10,11 @@ package edu.csuft.chentao.dao;
  */
 public class GroupUserTable {
 
-	public static final String GROUPUSERTABLE = "groupuser";
-	public static final String GROUPUSERTABLE_ALL_FIELD = "groupuser(groupid,userid,capital)";
+	public static final String TABLE_NAME = "group_user";
+	public static final String TABLE_ALL_FIELD = "group_user(group_id,user_id,capital)";
 	public static final String ID = "id";
-	public static final String GROUPID = "groupid";
-	public static final String USERID = "userid";
+	public static final String GROUP_ID = "group_id";
+	public static final String USER_ID = "user_id";
 	public static final String CAPITAL = "capital";
 
 	/** id */

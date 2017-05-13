@@ -11,6 +11,7 @@ import edu.csuft.chentao.dao.UserTableOperate;
 import edu.csuft.chentao.netty.NettyCollections;
 import edu.csuft.chentao.pojo.req.LoginReq;
 import edu.csuft.chentao.pojo.resp.GroupInfoResp;
+import edu.csuft.chentao.pojo.resp.ReturnInfoResp;
 import edu.csuft.chentao.pojo.resp.UserInfoResp;
 import edu.csuft.chentao.util.Constant;
 import edu.csuft.chentao.util.Logger;
@@ -30,6 +31,22 @@ public class LoginHandler implements Handler {
 
 		LoginReq req = (LoginReq) object;
 
+		//如果有同时有两个相同的账号登录，则顶掉前面一个账号
+		int userId = UserTableOperate.selectUserId(req.getUsername(), req.getPassword());
+		if(NettyCollections.getChannelHandlerContextByUserId(userId) != null){
+			Logger.log("重复登录，移除掉前面一个客户端");
+			//得到前一个用户登录的连接对象
+			ReturnInfoResp resp = new ReturnInfoResp();
+			resp.setType(Constant.TYPE_RETURN_INFO_CLIENT_EXIT);
+			ChannelHandlerContext ctx = NettyCollections.getChannelHandlerContextByUserId(userId);
+			//发送消息
+			ctx.writeAndFlush(resp);
+			
+			//从服务端将客户端连接对象移除掉
+			NettyCollections.removeWithUserId(userId);
+		
+		}
+		
 		// 返回消息
 		UserInfoResp resp = new UserInfoResp();
 
@@ -63,20 +80,6 @@ public class LoginHandler implements Handler {
 				final List<GroupInfoResp> groupInfoList = GroupTableOperate
 						.selectAllGroupInfosWithGroupIds(groupIdList);
 
-				/**
-				 * 得到所有用户信息
-				 */
-//				List<Integer> userIdList = new ArrayList<Integer>();
-//				List<UserInfoResp> userInfoList = new ArrayList<>();
-//				for (int groupId : groupIdList) {
-//					userIdList.addAll(GroupUserTableOperate
-//							.selectAllUserIdsWithGroupId(groupId));
-//				}
-//				for (int userId : userIdList) {
-//					userInfoList.add(UserTableOperate
-//							.selectUserInfoWithUserId(userId));
-//				}
-
 				// 在子线程中发送所有数据
 				new Thread(new Runnable() {
 					public void run() {
@@ -87,12 +90,6 @@ public class LoginHandler implements Handler {
 							chc.writeAndFlush(gir);
 						}
 
-						/**
-						 * 发送所有用户数据
-						 */
-//						for (UserInfoResp resp : userInfoList) {
-//							chc.writeAndFlush(resp);
-//						}
 					}
 				}).start();
 			}

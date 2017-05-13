@@ -25,7 +25,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Object> {
 		Logger.log("ServerHandler-->channelActive");
 	}
 
-	/** 读取客户端的消息 */
+	/** 接收到客户端的消息，并进行相应处理 */
 	@Override
 	public void channelRead(ChannelHandlerContext chc, Object object)
 			throws Exception {
@@ -48,7 +48,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Object> {
 			throws Exception {
 		// TODO Auto-generated method stub
 		super.exceptionCaught(ctx, cause);
-		Logger.log("SererHandler-->exceptionCaught");
+		Logger.log("SererHandler-->exceptionCaught---->"+cause.getMessage());
 	}
 	
 	@Override

@@ -13,16 +13,16 @@ package edu.csuft.chentao.dao;
  */
 public class AnnouncementTable {
 
-	public static final String TABLENAME = "announcement";
-	public static final String TABLE_ALL_FIELD = "announcement(serialnumber,title,content,username,time,userid,groupid)";
+	public static final String TABLE_NAME = "announcement";
+	public static final String TABLE_ALL_FIELD = "announcement(serial_number,title,content,username,time,user_id,group_id)";
 	public static final String ID = "id";
-	public static final String SERIALNUMBER = "serialnumber";
+	public static final String SERIAL_NUMBER = "serial_number";
 	public static final String TITLE = "title";
 	public static final String CONTENT = "content";
 	public static final String USERNAME = "username";
 	public static final String TIME = "time";
-	public static final String USERID = "userid";
-	public static final String GROUPID = "groupid";
+	public static final String USER_ID = "user_id";
+	public static final String GROUP_ID = "group_id";
 
 	/**
 	 * 插入数据库的编号

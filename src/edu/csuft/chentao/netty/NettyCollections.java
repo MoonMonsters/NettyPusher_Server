@@ -14,6 +14,8 @@ import java.util.concurrent.Executors;
 import edu.csuft.chentao.dao.GroupOperationTable;
 import edu.csuft.chentao.dao.GroupOperationTableOperate;
 import edu.csuft.chentao.dao.GroupTableOperate;
+import edu.csuft.chentao.dao.GroupUserTableOperate;
+import edu.csuft.chentao.pojo.req.Message;
 import edu.csuft.chentao.pojo.resp.GroupInfoResp;
 import edu.csuft.chentao.pojo.resp.GroupReminderResp;
 import edu.csuft.chentao.util.Constant;
@@ -32,6 +34,8 @@ public class NettyCollections {
 	private static final Map<Integer, ChannelHandlerContext> sCtxMap = new HashMap<Integer, ChannelHandlerContext>();
 	private static final ExecutorService sThreadPool = Executors
 			.newFixedThreadPool(100);
+	/** key值为群id，value值为群中用户id集合 */
+	private static final Map<Integer, List<Integer>> sUserIdListInMap = new HashMap<Integer, List<Integer>>();;
 
 	/**
 	 * 将与服务端正在连接的客户端保存起来
@@ -54,15 +58,19 @@ public class NettyCollections {
 	 * @param username
 	 *            用户名
 	 */
-	public static synchronized void removeWithUserId(int userid) {
+	public static synchronized void removeWithUserId(int userId) {
+		Logger.log("NettyCollections.removeWithUserId--->退出登录-->" + userId);
 		// 关闭流
-		ChannelHandlerContext chc = sCtxMap.get(userid);
+		ChannelHandlerContext chc = sCtxMap.get(userId);
 		if (chc != null) {
+			Logger.log("NettyCollections.removeWithUserId--->chc对象不为空，移除掉");
 			chc.close();
 			chc = null;
+			// 移除
+			sCtxMap.remove(userId);
+			Logger.log("NettyCollections.removeWithUserId--->当前在线人数->"
+					+ sCtxMap.size());
 		}
-		//移除
-		sCtxMap.remove(userid);
 	}
 
 	/**
@@ -71,20 +79,14 @@ public class NettyCollections {
 	 * @param chc
 	 */
 	public static synchronized void removeWithCHC(ChannelHandlerContext chc) {
-		// Set<String> set = chcMap.keySet();
-		// Iterator<String> it = set.iterator();
-		// String username = null;
-		// while(it.hasNext()){
-		// username = it.next();
-		// if(chcMap.get(username).equals(chc)){
-		// break;
-		// }
-		// }
-		// chcMap.remove(username);
+
+		Logger.log("NettyCollections.removeWithCHC-->客户端断开连接");
 
 		Collection<ChannelHandlerContext> collection = sCtxMap.values();
 		if (collection.contains(chc)) {
 			collection.remove(chc);
+			Logger.log("NettyCollections.removeWithCHC--->当前在线人数-->"
+					+ sCtxMap.size());
 		}
 	}
 
@@ -96,9 +98,20 @@ public class NettyCollections {
 	 * @param object
 	 *            发送对象
 	 */
-	public static void traverse(List<Integer> useridList, Object object) {
-		if (useridList.size() > 0) {
-			for (int userid : useridList) {
+	public static void traverse(int groupId, Object object) {
+		// 得到群id得到群用户id集合
+		List<Integer> userIdList = inputUserIdList(groupId);
+		Logger.log("NettyCollections.traverse-->"+groupId+"中的用户数量:"+userIdList.size());
+		//如果发送的是消息，则需要移除掉发送者id
+		if (object instanceof Message) {
+			Message msg = (Message) object;
+			int userId = msg.getUserid();
+			//如果list中的值都是int类型，那么他以下标为主，所以这儿需要先得到值的下标
+			int index = userIdList.indexOf(userId);
+			userIdList.remove(index);
+		}
+		if (userIdList.size() > 0) {
+			for (int userid : userIdList) {
 				ChannelHandlerContext chc = sCtxMap.get(userid);
 				if (chc != null) {
 					Logger.log("应该收到消息的userId->" + userid);
@@ -108,9 +121,6 @@ public class NettyCollections {
 		}
 	}
 
-	/**
-	 * 从
-	 */
 	public static void readMessageFromDatabase() {
 
 		new Thread(new Runnable() {
@@ -168,8 +178,49 @@ public class NettyCollections {
 		}).start();
 	}
 
+	/**
+	 * 得到所有连接客户端的用户id集合
+	 */
 	public static Set<Integer> getConnectionUerIdList() {
 		return sCtxMap.keySet();
 	}
 
+	/**
+	 * 获得ChannelHandlerContext
+	 * 
+	 * @param userId
+	 *            用户id
+	 */
+	public static ChannelHandlerContext getChannelHandlerContextByUserId(
+			int userId) {
+		return sCtxMap.get(userId);
+	}
+
+	/**
+	 * 根据群id得到该群中所有用户的id值
+	 * 
+	 * @param groupId
+	 *            群id
+	 * @return 用户id值集合
+	 */
+	private static List<Integer> inputUserIdList(int groupId) {
+
+		// 根据群id得到群人数
+		int groupUserNumber = GroupTableOperate
+				.getGroupUserNumberByGroupId(groupId);
+		List<Integer> userIdList = null;
+		// 如果map中没有该群用户数据集合,或者集合中的用户人数和数据库中的用户人数不一致，则重新获取
+		if (sUserIdListInMap.get(groupId) == null
+				|| sUserIdListInMap.get(groupId).size() != groupUserNumber) {
+			// 取出
+			userIdList = GroupUserTableOperate.getAllUserIdWithGroupId(groupId);
+			// 插入进去
+			sUserIdListInMap.put(groupId, userIdList);
+		} else {
+			// 如果存在，则直接取出
+			userIdList = sUserIdListInMap.get(groupId);
+		}
+
+		return userIdList;
+	}
 }
