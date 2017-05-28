@@ -31,7 +31,7 @@ public class DaoConnection {
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
 				// 后面代码，解决数据库数据乱码问题
-				String url = "jdbc:mysql://localhost:3306/nettypusher?useUnicode=true&characterEncoding=utf8";
+				String url = "jdbc:mysql://localhost:3306/nettypusher?useUnicode=true&characterEncoding=utf8&autoReconnect=true";
 				connection = DriverManager.getConnection(url, USERNAME,
 						PASSWORD);
 			} catch (Exception e) {

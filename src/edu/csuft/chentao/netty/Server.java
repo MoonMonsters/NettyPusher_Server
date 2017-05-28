@@ -48,30 +48,21 @@ public class Server {
 				@Override
 				protected void initChannel(Channel ch) throws Exception {
 
-//					ch.pipeline().addLast(new IdleStateHandler(5, 5, 5));
 					ch.pipeline().addLast(
 							new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers
 									.weakCachingConcurrentResolver(null)));
 					ch.pipeline().addLast(new ObjectEncoder());
 					ch.pipeline().addLast(new StringDecoder());
 					ch.pipeline().addLast(new StringEncoder());
-//					ch.pipeline().addLast(new MyIdleHandler());
 					ch.pipeline().addLast(new ServerHandler());
-					// ch.pipeline().addLast(new NettyMessageDecoder(1024*1024,
-					// 4, 4, -8, 0));
-					// ch.pipeline().addLast(new NettyMessageEncoder());
-					// ch.pipeline().addLast("readTimeoutHandler", new
-					// ReadTimeoutHandler(50));
-					// ch.pipeline().addLast(new LoginAuthRespHandler());
-					// ch.pipeline().addLast("HeartBeatHandler", new
-					// HeartBeatRespHandler());
-					// ch.pipeline().addLast(new ServerHandler());
 				}
 			});
 			// 绑定接口
 			ChannelFuture channelFuture = serverBootstrap.bind(10101).sync();
 			// 等待关闭
-			channelFuture.channel().closeFuture().sync();
+			Channel channel = channelFuture.channel();
+			runForever(channel);
+			channel.closeFuture().sync();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -80,4 +71,20 @@ public class Server {
 			worker.shutdownGracefully();
 		}
 	}
+	
+	private void runForever(final Channel channel){
+		new Thread(new Runnable() {
+			
+			public void run() {
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				channel.writeAndFlush("None");
+				channel.read();
+			}
+		}).start();
+	}
+	
 }

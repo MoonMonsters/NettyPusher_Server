@@ -11,9 +11,9 @@ package edu.csuft.chentao.dao;
 public class AnnouncementReader {
 
 	public static final String TABLE_NAME = "announcement_reader";
-	public static final String TABLE_ALL_FIELD = "announcement_reader(serail_number,user_id)";
+	public static final String TABLE_ALL_FIELD = "announcement_reader(serial_number,user_id)";
 	public static final String ID = "id";
-	public static final String SERIAL_NUMBER = "serail_number";
+	public static final String SERIAL_NUMBER = "serial_number";
 	public static final String USER_ID = "user_id";
 	
 	/**
