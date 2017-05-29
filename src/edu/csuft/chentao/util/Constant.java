@@ -10,6 +10,19 @@ package edu.csuft.chentao.util;
  */
 public interface Constant {
 
+	/**
+	 * 头像存放路径
+	 */
+	String PATH_HEAD_IMAGE = "./ServerFile/HeadImage";
+	/**
+	 * 消息图片存放路径
+	 */
+	String PATH_MESSAGE_IMAGE = "./ServerFile/MessageImage";
+	/**
+	 * 群文件存放路径
+	 */
+	String PATH_FILE = "./ServerFile/File";
+	
 	/** 默认用户id值，从10000开始 */
 	int DEFAULT_USERID = 10000;
 	/** 默认群id从20000开始 */
@@ -146,6 +159,11 @@ public interface Constant {
 	 */
 	int TYPE_RETURN_INFO_CLIENT_EXIT = 27;
 	/**
+	 * 同步聊天记录完成
+	 */
+	int TYPE_RETURN_INFO_SYNC_COMPLETE = 28;
+	
+	/**
 	 * 获取用户数据
 	 */
 	int TYPE_GET_INFO_USERINFO = 0;
@@ -178,6 +196,14 @@ public interface Constant {
 	 */
 	int TYPE_GET_INFO_REMOVE_FILE = 7;
 	/**
+     * 同步服务端中群聊天数据
+     */
+    int TYPE_GET_INFO_START_SYNC_GROUP_MESSAGE = 8;
+    /**
+     * 停止同步
+     */
+    int TYPE_GET_INFO_STOP_SYNC_GROUP_MESSAGE = 9;
+	/**
 	 * 用户拥有的群
 	 */
 	int TYPE_GROUP_INFO_OWNER = 0;
@@ -204,9 +230,20 @@ public interface Constant {
 	int TYPE_MSG_SEND = 0;
 	/** 接收消息 */
 	int TYPE_MSG_RECV = 1;
+	/**
+	 * 同步消息
+	 */
+	int TYPE_MSG_SYNC = 2;
 
-	String PATH = "./headimage";
-
+	/**
+	 * 文字消息
+	 */
+	int TYPE_MSG_TEXT = 0;
+	/**
+	 * 图片消息
+	 */
+	int TYPE_MSG_PIC = 1;
+	
 	/*
 	 * 在群里的身份信息
 	 */

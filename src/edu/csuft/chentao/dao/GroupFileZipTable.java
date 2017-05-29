@@ -6,6 +6,7 @@ package edu.csuft.chentao.dao;
 import java.io.File;
 
 import edu.csuft.chentao.pojo.req.FileZip;
+import edu.csuft.chentao.util.Constant;
 
 /**
  * @author csuft.chentao
@@ -148,7 +149,7 @@ public class GroupFileZipTable {
 		fileZip.setSerialNumber(table.getSerialNumber());
 		fileZip.setTime(table.getTime());
 		fileZip.setUserId(table.getUserId());
-		File file = new File(table.getSerialNumber());
+		File file = new File(Constant.PATH_FILE + "/" + table.getGroupId(), table.getSerialNumber());
 		fileZip.setFileSize(String.valueOf(file.length()));
 		if (attachContent) { // 如果需要添加文件数据，则加入
 			fileZip.setZip(content);

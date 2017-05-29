@@ -98,29 +98,35 @@ public class NettyCollections {
 	 * @param object
 	 *            发送对象
 	 */
-	public static void traverse(int groupId, Object object) {
-		// 得到群id得到群用户id集合
-		List<Integer> userIdList = inputUserIdList(groupId);
-		Logger.log("NettyCollections.traverse-->"+groupId+"中的用户数量:"+userIdList.size());
-		//如果发送的是消息，则需要移除掉发送者id
-		if (object instanceof Message) {
-			Message msg = (Message) object;
-			int userId = msg.getUserid();
-			//如果list中的值都是int类型，那么他以下标为主，所以这儿需要先得到值的下标
-			int index = userIdList.indexOf(userId);
-			userIdList.remove(index);
-		}
-		if (userIdList.size() > 0) {
-			for (int userid : userIdList) {
-				ChannelHandlerContext chc = sCtxMap.get(userid);
-				if (chc != null) {
-					Logger.log("应该收到消息的userId->" + userid);
-					chc.writeAndFlush(object);
+	public static void traverse(final int groupId, final Object object) {
+		new Thread(new Runnable() {
+
+			public void run() {
+				// 得到群id得到群用户id集合
+				List<Integer> userIdList = inputUserIdList(groupId);
+				// 如果发送的是消息，则需要移除掉发送者id
+				if (object instanceof Message) {
+					Message msg = (Message) object;
+					int userId = msg.getUserid();
+					// 如果list中的值都是int类型，那么他以下标为主，所以这儿需要先得到值的下标
+					int index = userIdList.indexOf(userId);
+					userIdList.remove(index);
+				}
+				if (userIdList.size() > 0) {
+					for (int userid : userIdList) {
+						ChannelHandlerContext chc = sCtxMap.get(userid);
+						if (chc != null) {
+							chc.writeAndFlush(object);
+						}
+					}
 				}
 			}
-		}
+		}).start();
 	}
 
+	/**
+	 * 从数据表中读取数据，如果有，则读取出来发送到客户端
+	 */
 	public static void readMessageFromDatabase() {
 
 		new Thread(new Runnable() {
@@ -168,7 +174,6 @@ public class NettyCollections {
 				} catch (Exception e) {
 					e.printStackTrace();
 				} finally {
-
 					// 休眠5秒
 					OperationUtil.sleepFor5000();
 					// 重复执行

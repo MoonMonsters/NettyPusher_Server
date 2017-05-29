@@ -4,17 +4,18 @@
 package edu.csuft.chentao.controller;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import edu.csuft.chentao.dao.GroupFileZipTableOperation;
 import edu.csuft.chentao.dao.GroupTableOperate;
 import edu.csuft.chentao.dao.GroupUserTableOperate;
+import edu.csuft.chentao.dao.MessageTableOperate;
 import edu.csuft.chentao.dao.UserTableOperate;
 import edu.csuft.chentao.netty.NettyCollections;
 import edu.csuft.chentao.pojo.req.FileZip;
 import edu.csuft.chentao.pojo.req.GetInfoReq;
+import edu.csuft.chentao.pojo.req.Message;
 import edu.csuft.chentao.pojo.resp.GroupInfoResp;
 import edu.csuft.chentao.pojo.resp.ReturnInfoResp;
 import edu.csuft.chentao.pojo.resp.UserInfoResp;
@@ -30,8 +31,13 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class GetInfoHandler implements Handler {
 
-	public void handle(ChannelHandlerContext chc, Object object) {
-		GetInfoReq req = (GetInfoReq) object;
+	/**
+	 * 主要用来解决同步与同步问题，因为每次收到命令时，都是不同的线程中 所以需要能跨线程的hashmap来解决问题
+	 */
+	private static ConcurrentHashMap<Integer, Boolean> mIsSyncMessageMap = new ConcurrentHashMap<Integer, Boolean>();
+
+	public void handle(final ChannelHandlerContext chc, Object object) {
+		final GetInfoReq req = (GetInfoReq) object;
 
 		Logger.log("用户请求数据GetInfoReq->" + req.toString());
 
@@ -59,6 +65,18 @@ public class GetInfoHandler implements Handler {
 			break;
 		case Constant.TYPE_GET_INFO_REMOVE_FILE: // 删除文件
 			removeGroupFile(chc, req);
+			break;
+		case Constant.TYPE_GET_INFO_START_SYNC_GROUP_MESSAGE: // 同步聊天信息
+			// 需要放到子线程中去处理，1.发送大量数据很耗时
+			// 2.需要用到停止同步功能，而如果不放到子线程中，会与同步功能在一个线程中，按照先后顺序执行，无法实现停止功能
+			new Thread(new Runnable() {
+				public void run() {
+					startSyncMessage(chc, req);
+				}
+			}).start();
+			break;
+		case Constant.TYPE_GET_INFO_STOP_SYNC_GROUP_MESSAGE:
+			stopSyncMessage(req);
 			break;
 		}
 	}
@@ -182,33 +200,19 @@ public class GetInfoHandler implements Handler {
 	private void downloadFile(ChannelHandlerContext chc, GetInfoReq req) {
 		String serialNumber = (String) req.getObj();
 
-		File file = new File(serialNumber);
-		FileInputStream fis = null;
-		try {
-			byte[] content = new byte[(int) file.length()];
-			fis = new FileInputStream(file);
-			// 读取文件内容
-			fis.read(content);
+		Logger.log(req.toString());
 
-			// 从数据表中获得数据
-			FileZip fz = GroupFileZipTableOperation
-					.queryBySerialNumber(serialNumber);
-			fz.setZip(content);
+		byte[] content = OperationUtil.getGroupFile(req.getArg1(),
+				(String) req.getObj());
 
-			// 发送到客户端
-			chc.writeAndFlush(fz);
+		// 从数据表中获得数据
+		FileZip fz = GroupFileZipTableOperation
+				.queryBySerialNumber(serialNumber);
+		fz.setZip(content);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (fis != null) {
-				try {
-					fis.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		// 发送到客户端
+		chc.writeAndFlush(fz);
+
 	}
 
 	/**
@@ -225,33 +229,101 @@ public class GetInfoHandler implements Handler {
 
 		int capital = GroupUserTableOperate.getCapitalWithUserIdAndGroupId(
 				groupId, userId);
-		int owerId = GroupFileZipTableOperation.getFileOwnerBySerialNumber(serialNumber, groupId);
-		
+		int owerId = GroupFileZipTableOperation.getFileOwnerBySerialNumber(
+				serialNumber, groupId);
+
 		ReturnInfoResp resp = new ReturnInfoResp();
-		
-		//如果要删除该文件的用户是，管理员，群主或者文件的上传者，那么则允许执行删除操作
+
+		// 如果要删除该文件的用户是，管理员，群主或者文件的上传者，那么则允许执行删除操作
 		if (capital == Constant.TYPE_GROUP_CAPITAL_ADMIN
 				|| capital == Constant.TYPE_GROUP_CAPITAL_OWNER
 				|| owerId == userId) {
-			//删除表中数据
-			boolean result1 = GroupFileZipTableOperation.deleteBySerialNumber(serialNumber, groupId);
+			// 删除表中数据
+			boolean result1 = GroupFileZipTableOperation.deleteBySerialNumber(
+					serialNumber, groupId);
 			boolean result2 = false;
 			File file = new File(serialNumber);
-			//删除文件
-			if(file.exists()){
+			// 删除文件
+			if (file.exists()) {
 				result2 = file.delete();
 			}
-			if(result1 && result2){
+			if (result1 && result2) {
 				resp.setType(Constant.TYPE_RETURN_INFO_REMOVE_FILE_SUCCESS);
 				resp.setObj(serialNumber);
 			}
-		}else{
+		} else {
 			resp.setType(Constant.TYPE_RETURN_INFO_REMOVE_FILE_FAIL);
 			resp.setObj("删除失败，请稍后再试");
 		}
-		
-		//发送执行结果到客户端
+
+		// 发送执行结果到客户端
 		chc.writeAndFlush(resp);
 	}
 
+	/**
+	 * 从数据库中读取消息数据，发送到客户端
+	 */
+	private void syncGroupMessage(ChannelHandlerContext chc, GetInfoReq req) {
+
+		int groupId = req.getArg1();
+		int from = 0;
+		int to = 20;
+
+		List<Message> messageList = null;
+		do {
+			messageList = MessageTableOperate.queryAllByGroupId(groupId, from,
+					to);
+			// 分页查询，从from读取到to项
+			from = to;
+			to = to + 20;
+
+			// 从Map中取出值，如果停止同步，则直接返回
+			if (!mIsSyncMessageMap.get(req.getArg1())) {
+				System.out.println("结束同步");
+				return;
+			}
+
+			for (Message message : messageList) {
+
+				chc.writeAndFlush(message);
+			}
+
+			try {
+				Thread.sleep(200);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			// 如果集合不为空，并且大小不为0，则继续从数据表中取数据
+		} while (messageList != null && messageList.size() != 0);
+
+		/*
+		 * 同步聊天记录完成，发送通知给客户端
+		 */
+		ReturnInfoResp resp = new ReturnInfoResp();
+		resp.setType(Constant.TYPE_RETURN_INFO_SYNC_COMPLETE);
+		resp.setArg1(req.getArg1());
+		chc.writeAndFlush(resp);
+	}
+
+	/**
+	 * 开始同步
+	 */
+	private void startSyncMessage(ChannelHandlerContext chc, GetInfoReq req) {
+
+		int groupId = req.getArg1();
+		// 开始同步，将groupId作为key值传入，同时将value值置为true
+		mIsSyncMessageMap.put(groupId, true);
+		syncGroupMessage(chc, req);
+	}
+
+	/**
+	 * 停止同步
+	 */
+	private void stopSyncMessage(GetInfoReq req) {
+
+		int groupId = req.getArg1();
+		// 停止同步，将groupId对应的值置为false
+		mIsSyncMessageMap.put(groupId, false);
+	}
 }
