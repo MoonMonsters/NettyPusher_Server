@@ -62,4 +62,43 @@ public class AnnouncementTableOperate {
 
 	}
 
+	/**
+	 * 根据序列号，得到公告数据
+	 * 
+	 * @param serialNumber
+	 *            公告序列号
+	 * @return 公告对象
+	 */
+	public static Announcement queryAnnouncementBySerialNumber(
+			String serialNumber) {
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		Announcement announcement = new Announcement();
+		try {
+			// serial_number,title,content,username,time,user_id,group_id
+			String sql = "select serial_number,title,content,username,time,user_id,group_id from "
+					+ AnnouncementTable.TABLE_NAME
+					+ " where "
+					+ AnnouncementTable.SERIAL_NUMBER + " = ?";
+			ps = connection.prepareStatement(sql);
+			ps.setString(1, serialNumber);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				announcement.setContent(rs.getString(3));
+				announcement.setGroupid(rs.getInt(7));
+				announcement.setSerialnumber(rs.getString(1));
+				announcement.setTime(rs.getString(5));
+				announcement.setTitle(rs.getString(2));
+				announcement.setUserid(rs.getInt(6));
+				announcement.setUsername(rs.getString(4));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return announcement;
+	}
+
 }

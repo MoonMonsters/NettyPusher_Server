@@ -39,8 +39,6 @@ public class GetInfoHandler implements Handler {
 	public void handle(final ChannelHandlerContext chc, Object object) {
 		final GetInfoReq req = (GetInfoReq) object;
 
-		Logger.log("用户请求数据GetInfoReq->" + req.toString());
-
 		switch (req.getType()) {
 		case Constant.TYPE_GET_INFO_USERINFO: // 获取用户信息
 			getUserInfo(chc, req);
@@ -78,7 +76,39 @@ public class GetInfoHandler implements Handler {
 		case Constant.TYPE_GET_INFO_STOP_SYNC_GROUP_MESSAGE:
 			stopSyncMessage(req);
 			break;
+		case Constant.TYPE_GET_INFO_LOAD_MESSAGE:
+			loadGroupMessage(chc, req);
+			break;
 		}
+	}
+
+	/**
+	 * 自动加载未读聊天记录
+	 */
+	private void loadGroupMessage(ChannelHandlerContext chc, GetInfoReq req) {
+		int groupId = req.getArg1();
+		String time = (String) req.getObj();
+
+		if (time == null) {	//如果时间为空，不读取任何数据
+			return;
+		}
+
+		int from = 0;
+		int to = 20;
+
+		List<Message> messageList = null;
+		do {
+
+			messageList = MessageTableOperate.queryMessageListByTime(groupId,
+					time, from, to);
+
+			for (Message m : messageList) {
+				chc.writeAndFlush(m);
+			}
+
+			from = to;
+			to += 20;
+		} while (messageList != null && messageList.size() != 0);
 	}
 
 	/**
@@ -108,7 +138,6 @@ public class GetInfoHandler implements Handler {
 		// 数据集合
 		List<GroupInfoResp> groupInfoList = GroupTableOperate
 				.getGroupInfoListWithGroupTag(tag);
-		Logger.log("给群标签读取到数据条数-->" + groupInfoList.size());
 		// 逐条发送
 		for (GroupInfoResp gir : groupInfoList) {
 			// 设置类型
@@ -131,7 +160,6 @@ public class GetInfoHandler implements Handler {
 		// 得到随机的不多于10条数据
 		List<GroupInfoResp> groupInfoList = GroupTableOperate
 				.getGroupInfoListWithGroupName(groupName);
-		Logger.log("给群名读取到数据条数-->" + groupInfoList.size());
 		for (GroupInfoResp gir : groupInfoList) {
 			// 设置类型
 			gir.setType(Constant.TYPE_GROUP_INFO_SEARCH);
@@ -176,7 +204,6 @@ public class GetInfoHandler implements Handler {
 	private void getUserInfo(ChannelHandlerContext chc, GetInfoReq req) {
 		// 得到用户id
 		int userId = req.getArg1();
-		Logger.log("用户请求的userId->" + userId);
 		// 根据用户id得到用户信息
 		UserInfoResp resp = UserTableOperate.selectUserInfoWithUserId(userId);
 		resp.setType(Constant.TYPE_LOGIN_USER_INFO);
@@ -279,7 +306,6 @@ public class GetInfoHandler implements Handler {
 
 			// 从Map中取出值，如果停止同步，则直接返回
 			if (!mIsSyncMessageMap.get(req.getArg1())) {
-				System.out.println("结束同步");
 				return;
 			}
 

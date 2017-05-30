@@ -7,7 +7,6 @@ import edu.csuft.chentao.dao.UserTableOperate;
 import edu.csuft.chentao.pojo.req.UpdateUserInfoReq;
 import edu.csuft.chentao.pojo.resp.ReturnInfoResp;
 import edu.csuft.chentao.util.Constant;
-import edu.csuft.chentao.util.Logger;
 import edu.csuft.chentao.util.OperationUtil;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -19,8 +18,6 @@ import io.netty.channel.ChannelHandlerContext;
 public class UpdateUserInfoHandler implements Handler {
 
 	public void handle(ChannelHandlerContext chc, Object object) {
-
-		Logger.log("UpdateUserInfoHandler-->更新信息操作");
 
 		UpdateUserInfoReq req = (UpdateUserInfoReq) object;
 		ReturnInfoResp resp = null;
@@ -49,8 +46,6 @@ public class UpdateUserInfoHandler implements Handler {
 				resp.setObj("头像更改失败");
 			}
 		}
-
-		Logger.log("ReturnMessageResp-->返回更新后的信息");
 
 		// 返回结果
 		chc.writeAndFlush(resp);

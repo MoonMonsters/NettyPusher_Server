@@ -3,7 +3,6 @@
  */
 package edu.csuft.chentao.controller;
 
-import edu.csuft.chentao.util.Logger;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -14,8 +13,6 @@ import io.netty.channel.ChannelHandlerContext;
 public class AllMessageHandler {
 
 	public static void handleMessage(ChannelHandlerContext chc, Object object){
-		
-		Logger.log("AllMessageHandler-->处理消息入口");
 		
 		//根据相应的object类型，得到对应的处理对象
 		Handler handler = MessageHandlerFactory.getHandlerInstance(object);

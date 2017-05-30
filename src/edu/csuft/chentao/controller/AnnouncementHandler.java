@@ -34,7 +34,6 @@ public class AnnouncementHandler implements Handler{
 		//4.如果用户不在线，则将所有数据存储到数据库中
 		//得到所有在线用户ID
 		Set<Integer> userIdSet = NettyCollections.getConnectionUerIdList();
-//		userIdSet.add(announcement.getUserid());
 		for(int userId : userIdList){
 			if(!userIdSet.contains(userId)){
 				AnnouncementReader reader = new AnnouncementReader();

@@ -7,7 +7,6 @@ import edu.csuft.chentao.dao.UserTableOperate;
 import edu.csuft.chentao.pojo.req.ChangePasswordReq;
 import edu.csuft.chentao.pojo.resp.ReturnInfoResp;
 import edu.csuft.chentao.util.Constant;
-import edu.csuft.chentao.util.Logger;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -44,8 +43,6 @@ public class ChangePasswordHandler implements Handler {
 			resp.setType(Constant.TYPE_RETURN_INFO_CHANGE_PASSWORD_FAIL);
 		}
 
-		Logger.log("ChangePasswordHandler-->"+resp.toString());
-		
 		chc.writeAndFlush(resp);
 	}
 

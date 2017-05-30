@@ -11,10 +11,14 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
+import edu.csuft.chentao.dao.AnnouncementReaderOperate;
+import edu.csuft.chentao.dao.AnnouncementTableOperate;
 import edu.csuft.chentao.dao.GroupOperationTable;
 import edu.csuft.chentao.dao.GroupOperationTableOperate;
 import edu.csuft.chentao.dao.GroupTableOperate;
 import edu.csuft.chentao.dao.GroupUserTableOperate;
+import edu.csuft.chentao.pojo.req.Announcement;
 import edu.csuft.chentao.pojo.req.Message;
 import edu.csuft.chentao.pojo.resp.GroupInfoResp;
 import edu.csuft.chentao.pojo.resp.GroupReminderResp;
@@ -48,7 +52,7 @@ public class NettyCollections {
 	public static synchronized void add(Integer userid,
 			ChannelHandlerContext chc) {
 		sCtxMap.put(userid, chc);
-		Logger.log("NettyCollections-->当前在线人数" + sCtxMap.size());
+		Logger.log("NettyCollections-->当前在线人数=" + sCtxMap.size());
 		Logger.log("NettyCollections-->当前在线userId=" + userid);
 	}
 
@@ -137,39 +141,8 @@ public class NettyCollections {
 					while (it.hasNext()) {
 						final int userId = it.next();
 
-						final GroupOperationTable table = GroupOperationTableOperate
-								.queryByReaderId(userId);
-						if (table != null) {
-							Logger.log("table不为空，" + userId + "有数据可以读取");
-							sThreadPool.execute(new Runnable() {
-
-								public void run() {
-									// 此数据暂时为空
-									GroupReminderResp resp = new GroupReminderResp();
-									// 得到群数据
-									GroupInfoResp group = GroupTableOperate
-											.getGroupInfoWithId2(table
-													.getGroupId());
-
-									resp.setType(table.getType());
-									resp.setUserId(table.getUserId());
-									resp.setGroupId(table.getGroupId());
-									resp.setGroupName(group.getGroupname());
-									resp.setDescription(table.getDescription());
-									resp.setImage(group.getHeadImage());
-
-									// 将消息发送到服务端
-									sCtxMap.get(userId).writeAndFlush(resp);
-
-									if (resp.getType() == Constant.TYPE_GROUP_REMINDER_ADD_GROUP) {
-										group.setType(Constant.TYPE_GROUP_INFO_OWNER);
-										// 加入群，把群的相关信息发送到客户端
-										sCtxMap.get(userId)
-												.writeAndFlush(group);
-									}
-								}
-							});
-						}
+						readFromGroupOperationTable(userId);
+						readFromAnnouncementReaderTable(userId);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -181,6 +154,68 @@ public class NettyCollections {
 				}
 			}
 		}).start();
+	}
+
+	/**
+	 * 从announcement_reader表中读取数据
+	 * 
+	 * @param userId 可读用户id
+	 */
+	private static void readFromAnnouncementReaderTable(int userId) {
+		ChannelHandlerContext chc = sCtxMap.get(userId);
+		if(chc != null){
+			// 得到可读取公告集合
+			List<String> serialNumberList = AnnouncementReaderOperate
+					.queryByUserId(userId);
+			// 从announcement_reader表中删除数据
+			AnnouncementReaderOperate.delete(userId);
+			for (String serialNumber : serialNumberList) {
+				// 根据序列号得到公告数据
+				Announcement announcement = AnnouncementTableOperate
+						.queryAnnouncementBySerialNumber(serialNumber);
+				// 发送
+				chc.writeAndFlush(announcement);
+			}
+		}
+	}
+
+	/**
+	 * 从group_operation表中读取数据
+	 * 
+	 * @param userId
+	 *            用户id
+	 */
+	private static void readFromGroupOperationTable(final int userId) {
+		final GroupOperationTable table = GroupOperationTableOperate
+				.queryByReaderId(userId);
+		if (table != null) {
+			sThreadPool.execute(new Runnable() {
+
+				public void run() {
+					// 此数据暂时为空
+					GroupReminderResp resp = new GroupReminderResp();
+					// 得到群数据
+					GroupInfoResp group = GroupTableOperate
+							.getGroupInfoWithId2(table.getGroupId());
+
+					resp.setType(table.getType());
+					resp.setUserId(table.getUserId());
+					resp.setGroupId(table.getGroupId());
+					resp.setGroupName(group.getGroupname());
+					resp.setDescription(table.getDescription());
+					resp.setImage(group.getHeadImage());
+
+					// 将消息发送到服务端
+					sCtxMap.get(userId).writeAndFlush(resp);
+
+					if (resp.getType() == Constant.TYPE_GROUP_REMINDER_ADD_GROUP) {
+						group.setType(Constant.TYPE_GROUP_INFO_OWNER);
+						// 加入群，把群的相关信息发送到客户端
+						sCtxMap.get(userId).writeAndFlush(group);
+					}
+				}
+			});
+		}
 	}
 
 	/**

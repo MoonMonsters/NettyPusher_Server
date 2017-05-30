@@ -7,7 +7,6 @@ import edu.csuft.chentao.dao.GroupTableOperate;
 import edu.csuft.chentao.pojo.req.CreateGroupReq;
 import edu.csuft.chentao.pojo.resp.GroupInfoResp;
 import edu.csuft.chentao.util.Constant;
-import edu.csuft.chentao.util.Logger;
 import edu.csuft.chentao.util.OperationUtil;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -19,12 +18,9 @@ import io.netty.channel.ChannelHandlerContext;
 public class CreateGroupHandler implements Handler {
 
 	public void handle(ChannelHandlerContext chc, Object object) {
-		Logger.log("CreateGroupHandler-->创建群操作");
 		CreateGroupReq req = (CreateGroupReq) object;
 		// 执行插入操作，并且返回结果
 		int groupId = GroupTableOperate.insert(req);
-
-		Logger.log("创建群是否成功-->" + (groupId == -1 ? false : true));
 
 		/**
 		 * 返回创建的群
@@ -48,6 +44,5 @@ public class CreateGroupHandler implements Handler {
 					req.getGroupname() + "创建失败，请稍后再试");
 		}
 
-		Logger.log("CreateGroupHandler-->返回创建群的群信息");
 	}
 }

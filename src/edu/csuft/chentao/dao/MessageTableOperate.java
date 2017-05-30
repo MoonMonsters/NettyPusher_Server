@@ -78,9 +78,11 @@ public class MessageTableOperate {
 					+ " where "
 					+ MessageTable.GROUP_ID
 					+ " = ? order by "
-					+ MessageTable.ID + " asc limit "+from+","+to+"";
+					+ MessageTable.ID + " asc limit ?,?";
 			ps = connection.prepareStatement(sql);
 			ps.setInt(1, groupId);
+			ps.setInt(2, from);
+			ps.setInt(3, to);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				int userId = rs.getInt(1);
@@ -104,6 +106,50 @@ public class MessageTableOperate {
 		return messageList;
 	}
 
+	public static List<Message> queryMessageListByTime(int groupId, String lastTime, int from, int to){
+		List<Message> messageList = new ArrayList<Message>();
+
+		Connection connection = DaoConnection.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			// user_id,group_id,type_msg,time,content,image_serial_number,message_serial_number
+			String sql = "select user_id,group_id,type_msg,time,content,image_serial_number,message_serial_number"
+					+ " from "
+					+ MessageTable.TABLE_NAME
+					+ " where "
+					+ MessageTable.GROUP_ID
+					+ " = ? and "+MessageTable.TIME+" > ? order by "
+					+ MessageTable.ID + " asc limit ?,?";
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, groupId);
+			ps.setString(2, lastTime);
+			ps.setInt(3, from);
+			ps.setInt(4, to);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				int userId = rs.getInt(1);
+				int groupId2 = rs.getInt(2);
+				int typeMsg = rs.getInt(3);
+				String time = rs.getString(4);
+				String content = rs.getString(5);
+				String imageSerialNumber = rs.getString(6);
+				int messageSerialNumber = rs.getInt(7);
+				MessageTable table = new MessageTable(userId, groupId2, typeMsg,
+						time, content, imageSerialNumber, messageSerialNumber);
+				Message message = MessageTableOperate.tableToMessage(table);
+				messageList.add(message);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			OperationUtil.closeDataConnection(ps, rs);
+		}
+
+		return messageList;
+	}
+	
 	/**
 	 * 将Message对象转换成对应的Table对象
 	 */

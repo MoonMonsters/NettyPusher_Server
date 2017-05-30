@@ -34,8 +34,6 @@ public class GroupOperationHandler implements Handler {
 
 		if (req.getType() == Constant.TYPE_GROUP_OPERATION_EXIT_BY_MYSELF) { // 自己退出
 
-			Logger.log("自己退出群");
-
 			int groupId = req.getGroupId();
 			int userId = req.getUserId1();
 			int capital = GroupUserTableOperate.getCapitalWithUserIdAndGroupId(
@@ -82,7 +80,6 @@ public class GroupOperationHandler implements Handler {
 			}
 		} else if (req.getType() == Constant.TYPE_GROUP_OPERATION_EXIT_BY_ADMIN) { // 被踢出
 
-			Logger.log("踢出群");
 			// 被踢出用户id
 			int userId = req.getUserId1();
 			// 被踢出的群
@@ -99,8 +96,6 @@ public class GroupOperationHandler implements Handler {
 
 				GroupOperationTableOperate.insert(table);
 				
-				Logger.log("用户被踢出群成功----"+userId);
-				
 				// 踢出群成功，发送消息给客户端
 				OperationUtil.sendReturnInfoResp(chc,
 						Constant.TYPE_RETURN_INFO_REMOVE_USER_SUCCESS, "踢出群成功");
@@ -116,8 +111,6 @@ public class GroupOperationHandler implements Handler {
 			int userId = req.getUserId1();
 			int groupId = req.getGroupId();
 
-			Logger.log(userId + "自己申请加入群" + groupId);
-
 			// 如果申请的群不存在
 			if (!GroupTableOperate.isExitGroupWithGroupId(groupId)) {
 				Logger.log(groupId + " 群不存在");
@@ -125,8 +118,6 @@ public class GroupOperationHandler implements Handler {
 				OperationUtil.sendReturnInfoResp(chc,
 						Constant.TYPE_RETURN_INFO_GROUP_NOT_EXIST, "申请的群不存在");
 			} else if (!GroupUserTableOperate.isExit(groupId, userId)) { // 如果不是群成员
-
-				Logger.log("在群里不存在");
 
 				String name = UserTableOperate.getUsernameWithUserId(userId);
 				List<Integer> readerIdList = GroupUserTableOperate
@@ -138,23 +129,18 @@ public class GroupOperationHandler implements Handler {
 				table.setType(Constant.TYPE_GROUP_REMINDER_WANT_TO_ADD_GROUP);
 				table.setUserId(userId);
 
-				Logger.log("申请加入群时，群管理人员数量->" + readerIdList.size());
-
 				for (int readerId : readerIdList) {
 					// 设置不同的读取消息用户
 					table.setReaderId(readerId);
 					GroupOperationTableOperate.insert(table);
 				}
 			} else if (GroupUserTableOperate.isExit(groupId, userId)) { // 如果在群里已经存在
-				Logger.log("在群里已经存在");
 				// 当重复添加群时，返回此消息
 				OperationUtil.sendReturnInfoResp(chc,
 						Constant.TYPE_RETURN_INFO_GROUP_MUL_USER,
 						"你已加入群，不要重复添加");
 			}
 		} else if (req.getType() == Constant.TYPE_GROUP_OPERATION_ADD_BY_INVITE) { // 被邀请加入群
-			Logger.log("邀请加入群");
-
 			// 被邀请人id
 			int userId1 = req.getUserId1();
 			// 群id
@@ -209,7 +195,6 @@ public class GroupOperationHandler implements Handler {
 				}
 			}
 		} else if (req.getType() == Constant.TYPE_GROUP_OPERATION_REFUSE_ADD_GROUP) { // 拒绝加入群
-			Logger.log("拒绝加入群");
 
 			int userId = req.getUserId1();
 			int groupId = req.getGroupId();

@@ -203,6 +203,11 @@ public interface Constant {
      * 停止同步
      */
     int TYPE_GET_INFO_STOP_SYNC_GROUP_MESSAGE = 9;
+    /**
+     * 加载未读消息数据，不是加载所有聊天记录
+     */
+    int TYPE_GET_INFO_LOAD_MESSAGE = 10;
+    
 	/**
 	 * 用户拥有的群
 	 */

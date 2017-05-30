@@ -12,7 +12,6 @@ import edu.csuft.chentao.netty.NettyCollections;
 import edu.csuft.chentao.pojo.req.Message;
 import edu.csuft.chentao.pojo.resp.ReturnInfoResp;
 import edu.csuft.chentao.util.Constant;
-import edu.csuft.chentao.util.Logger;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -23,8 +22,6 @@ import io.netty.channel.ChannelHandlerContext;
 public class MessageHandler implements Handler {
 
 	public void handle(ChannelHandlerContext chc, Object object) {
-
-		Logger.log("MessageHandler-->发送群消息操作");
 
 		// 消息时间设置为到达服务端时间，而不再由客户端产生
 		String currentTime = getCurrentTime();

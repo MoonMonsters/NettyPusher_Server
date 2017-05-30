@@ -27,12 +27,8 @@ public class LoginHandler implements Handler {
 
 	public void handle(final ChannelHandlerContext chc, Object object) {
 
-		Logger.log("LoginHandler-->登录操作");
-
 		LoginReq req = (LoginReq) object;
 
-		Logger.log("LoginHandler-->username = " + req.getUsername());
-		
 		//如果有同时有两个相同的账号登录，则顶掉前面一个账号
 		int userId = UserTableOperate.selectUserId(req.getUsername(), req.getPassword());
 		if(NettyCollections.getChannelHandlerContextByUserId(userId) != null){
@@ -96,8 +92,6 @@ public class LoginHandler implements Handler {
 				}).start();
 			}
 		}
-
-		Logger.log("UserInfoResp-->返回用户信息");
 
 		Logger.log("LoginHandler-->username = "+resp.getUsername() + ",userId = " + resp.getUserid());
 		chc.writeAndFlush(resp);
