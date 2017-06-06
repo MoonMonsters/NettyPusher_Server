@@ -13,6 +13,7 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  * ·þÎñÆ÷
@@ -54,6 +55,8 @@ public class Server {
 					ch.pipeline().addLast(new ObjectEncoder());
 					ch.pipeline().addLast(new StringDecoder());
 					ch.pipeline().addLast(new StringEncoder());
+					ch.pipeline().addLast("idleStateHandler",new IdleStateHandler(5, 10, 15));
+//					ch.pipeline().addLast(new MyIdleHandler());
 					ch.pipeline().addLast(new ServerHandler());
 				}
 			});

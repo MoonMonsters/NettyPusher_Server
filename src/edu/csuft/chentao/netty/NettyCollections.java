@@ -52,6 +52,7 @@ public class NettyCollections {
 	public static synchronized void add(Integer userid,
 			ChannelHandlerContext chc) {
 		sCtxMap.put(userid, chc);
+		System.out.println("用户->" + userid + "登录成功，当前在线人数->" + sCtxMap.size());
 		Logger.log("NettyCollections-->当前在线人数=" + sCtxMap.size());
 		Logger.log("NettyCollections-->当前在线userId=" + userid);
 	}
@@ -72,6 +73,7 @@ public class NettyCollections {
 			chc = null;
 			// 移除
 			sCtxMap.remove(userId);
+			System.out.println("用户->" + userId + "退出登录，当前在线人数->" + sCtxMap.size());
 			Logger.log("NettyCollections.removeWithUserId--->当前在线人数->"
 					+ sCtxMap.size());
 		}
@@ -89,6 +91,7 @@ public class NettyCollections {
 		Collection<ChannelHandlerContext> collection = sCtxMap.values();
 		if (collection.contains(chc)) {
 			collection.remove(chc);
+			System.out.println("用户意外退出登录，当前在线人数->" + sCtxMap.size());
 			Logger.log("NettyCollections.removeWithCHC--->当前在线人数-->"
 					+ sCtxMap.size());
 		}

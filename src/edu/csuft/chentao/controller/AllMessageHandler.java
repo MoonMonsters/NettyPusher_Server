@@ -3,6 +3,7 @@
  */
 package edu.csuft.chentao.controller;
 
+import edu.csuft.chentao.util.Logger;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -14,10 +15,16 @@ public class AllMessageHandler {
 
 	public static void handleMessage(ChannelHandlerContext chc, Object object){
 		
+		Logger.log("AllMessageHandler-->handleMessage-----" + object.toString());
+		
 		//根据相应的object类型，得到对应的处理对象
 		Handler handler = MessageHandlerFactory.getHandlerInstance(object);
 		
-		//处理操作
-		handler.handle(chc, object);
+		if(handler != null){
+			//处理操作
+			handler.handle(chc, object);
+		}else{
+			chc.writeAndFlush("---Write idle---");
+		}
 	}
 }

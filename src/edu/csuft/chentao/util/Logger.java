@@ -10,7 +10,7 @@ package edu.csuft.chentao.util;
  */
 public class Logger {
 
-	private static boolean isPrint = true;
+	private static boolean isPrint = false;
 	
 	public static void log(String msg){
 		if(isPrint){
